@@ -1,0 +1,2798 @@
+{
+  "method": "cosine_baseline",
+  "n_requests": 306,
+  "aggregate": {
+    "recall@10": {
+      "mean": 0.0176984845042879,
+      "std": 0.012731717594466885,
+      "median": 0.01507537688442211,
+      "ci_95": [
+        0.01638746372949758,
+        0.019127129413422074
+      ]
+    },
+    "recall@20": {
+      "mean": 0.03298540984345868,
+      "std": 0.021936721792852252,
+      "median": 0.03,
+      "ci_95": [
+        0.030564015223902563,
+        0.03555363695267507
+      ]
+    },
+    "recall@50": {
+      "mean": 0.07132882007757109,
+      "std": 0.04583937647951077,
+      "median": 0.065,
+      "ci_95": [
+        0.06650608573631585,
+        0.07652941898536782
+      ]
+    },
+    "recall@100": {
+      "mean": 0.12854647832287264,
+      "std": 0.07486850619601002,
+      "median": 0.115,
+      "ci_95": [
+        0.12075920849790714,
+        0.13666122290080226
+      ]
+    }
+  },
+  "per_request": [
+    {
+      "request_id": 1005207739,
+      "n_candidates": 1289,
+      "n_positives": 195,
+      "recall@10": 0.041025641025641026,
+      "recall@20": 0.07179487179487179,
+      "recall@50": 0.1794871794871795,
+      "recall@100": 0.30256410256410254
+    },
+    {
+      "request_id": 1017453312,
+      "n_candidates": 2166,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.015,
+      "recall@100": 0.035
+    },
+    {
+      "request_id": 102432111,
+      "n_candidates": 2102,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.010050251256281407,
+      "recall@50": 0.04522613065326633,
+      "recall@100": 0.09547738693467336
+    },
+    {
+      "request_id": 1034102114,
+      "n_candidates": 2176,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.015,
+      "recall@50": 0.045,
+      "recall@100": 0.09
+    },
+    {
+      "request_id": 1034658266,
+      "n_candidates": 2148,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.01,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 1039558417,
+      "n_candidates": 2018,
+      "n_positives": 200,
+      "recall@10": 0.04,
+      "recall@20": 0.06,
+      "recall@50": 0.115,
+      "recall@100": 0.19
+    },
+    {
+      "request_id": 1046150921,
+      "n_candidates": 2119,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.035,
+      "recall@50": 0.06,
+      "recall@100": 0.075
+    },
+    {
+      "request_id": 1048482826,
+      "n_candidates": 2177,
+      "n_positives": 199,
+      "recall@10": 0.02512562814070352,
+      "recall@20": 0.035175879396984924,
+      "recall@50": 0.05527638190954774,
+      "recall@100": 0.07035175879396985
+    },
+    {
+      "request_id": 1057054661,
+      "n_candidates": 2098,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.045,
+      "recall@50": 0.14,
+      "recall@100": 0.275
+    },
+    {
+      "request_id": 1058417789,
+      "n_candidates": 2117,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.035,
+      "recall@50": 0.075,
+      "recall@100": 0.145
+    },
+    {
+      "request_id": 1062986715,
+      "n_candidates": 849,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.015,
+      "recall@50": 0.035,
+      "recall@100": 0.085
+    },
+    {
+      "request_id": 1071859585,
+      "n_candidates": 2165,
+      "n_positives": 188,
+      "recall@10": 0.02127659574468085,
+      "recall@20": 0.0425531914893617,
+      "recall@50": 0.10106382978723404,
+      "recall@100": 0.16489361702127658
+    },
+    {
+      "request_id": 1071941299,
+      "n_candidates": 2069,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.015,
+      "recall@50": 0.05,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 1081172919,
+      "n_candidates": 2166,
+      "n_positives": 200,
+      "recall@10": 0.04,
+      "recall@20": 0.055,
+      "recall@50": 0.085,
+      "recall@100": 0.145
+    },
+    {
+      "request_id": 108126131,
+      "n_candidates": 2170,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.01507537688442211,
+      "recall@50": 0.04020100502512563,
+      "recall@100": 0.07035175879396985
+    },
+    {
+      "request_id": 1091083408,
+      "n_candidates": 2173,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.05025125628140704,
+      "recall@50": 0.08542713567839195,
+      "recall@100": 0.20100502512562815
+    },
+    {
+      "request_id": 1093771350,
+      "n_candidates": 2170,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.01,
+      "recall@50": 0.035,
+      "recall@100": 0.055
+    },
+    {
+      "request_id": 1098694698,
+      "n_candidates": 723,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.005,
+      "recall@50": 0.045,
+      "recall@100": 0.16
+    },
+    {
+      "request_id": 1114618235,
+      "n_candidates": 2146,
+      "n_positives": 198,
+      "recall@10": 0.005050505050505051,
+      "recall@20": 0.015151515151515152,
+      "recall@50": 0.020202020202020204,
+      "recall@100": 0.04040404040404041
+    },
+    {
+      "request_id": 111741440,
+      "n_candidates": 935,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.05,
+      "recall@50": 0.09,
+      "recall@100": 0.185
+    },
+    {
+      "request_id": 1132259157,
+      "n_candidates": 1937,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.06,
+      "recall@100": 0.105
+    },
+    {
+      "request_id": 1138759794,
+      "n_candidates": 2087,
+      "n_positives": 173,
+      "recall@10": 0.023121387283236993,
+      "recall@20": 0.04046242774566474,
+      "recall@50": 0.09248554913294797,
+      "recall@100": 0.1676300578034682
+    },
+    {
+      "request_id": 115887897,
+      "n_candidates": 2154,
+      "n_positives": 182,
+      "recall@10": 0.02197802197802198,
+      "recall@20": 0.03296703296703297,
+      "recall@50": 0.08791208791208792,
+      "recall@100": 0.14835164835164835
+    },
+    {
+      "request_id": 115967259,
+      "n_candidates": 2136,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.015,
+      "recall@50": 0.05,
+      "recall@100": 0.14
+    },
+    {
+      "request_id": 1164283244,
+      "n_candidates": 2109,
+      "n_positives": 197,
+      "recall@10": 0.015228426395939087,
+      "recall@20": 0.05583756345177665,
+      "recall@50": 0.16243654822335024,
+      "recall@100": 0.25888324873096447
+    },
+    {
+      "request_id": 1171006766,
+      "n_candidates": 2084,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.01,
+      "recall@50": 0.015,
+      "recall@100": 0.075
+    },
+    {
+      "request_id": 1178243409,
+      "n_candidates": 921,
+      "n_positives": 200,
+      "recall@10": 0.045,
+      "recall@20": 0.085,
+      "recall@50": 0.145,
+      "recall@100": 0.26
+    },
+    {
+      "request_id": 1182802380,
+      "n_candidates": 2147,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.0,
+      "recall@100": 0.01
+    },
+    {
+      "request_id": 1185036172,
+      "n_candidates": 2150,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.01507537688442211,
+      "recall@50": 0.01507537688442211,
+      "recall@100": 0.05025125628140704
+    },
+    {
+      "request_id": 1186849452,
+      "n_candidates": 2028,
+      "n_positives": 167,
+      "recall@10": 0.011976047904191617,
+      "recall@20": 0.011976047904191617,
+      "recall@50": 0.023952095808383235,
+      "recall@100": 0.0658682634730539
+    },
+    {
+      "request_id": 1197046791,
+      "n_candidates": 1977,
+      "n_positives": 125,
+      "recall@10": 0.032,
+      "recall@20": 0.032,
+      "recall@50": 0.08,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 1200097421,
+      "n_candidates": 2160,
+      "n_positives": 198,
+      "recall@10": 0.015151515151515152,
+      "recall@20": 0.020202020202020204,
+      "recall@50": 0.03535353535353535,
+      "recall@100": 0.06565656565656566
+    },
+    {
+      "request_id": 1206104634,
+      "n_candidates": 2166,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.05,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 1219682937,
+      "n_candidates": 2073,
+      "n_positives": 197,
+      "recall@10": 0.015228426395939087,
+      "recall@20": 0.025380710659898477,
+      "recall@50": 0.06598984771573604,
+      "recall@100": 0.1065989847715736
+    },
+    {
+      "request_id": 1221692640,
+      "n_candidates": 2180,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.035,
+      "recall@50": 0.065,
+      "recall@100": 0.1
+    },
+    {
+      "request_id": 1225369548,
+      "n_candidates": 777,
+      "n_positives": 187,
+      "recall@10": 0.026737967914438502,
+      "recall@20": 0.0374331550802139,
+      "recall@50": 0.06951871657754011,
+      "recall@100": 0.11229946524064172
+    },
+    {
+      "request_id": 122783705,
+      "n_candidates": 2089,
+      "n_positives": 176,
+      "recall@10": 0.03977272727272727,
+      "recall@20": 0.07386363636363637,
+      "recall@50": 0.11931818181818182,
+      "recall@100": 0.19318181818181818
+    },
+    {
+      "request_id": 1232755987,
+      "n_candidates": 2160,
+      "n_positives": 191,
+      "recall@10": 0.015706806282722512,
+      "recall@20": 0.02617801047120419,
+      "recall@50": 0.06806282722513089,
+      "recall@100": 0.1099476439790576
+    },
+    {
+      "request_id": 1237770920,
+      "n_candidates": 2098,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.01,
+      "recall@50": 0.045,
+      "recall@100": 0.065
+    },
+    {
+      "request_id": 1250589080,
+      "n_candidates": 2130,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.005,
+      "recall@50": 0.02,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 1253816763,
+      "n_candidates": 2097,
+      "n_positives": 196,
+      "recall@10": 0.01020408163265306,
+      "recall@20": 0.04081632653061224,
+      "recall@50": 0.07142857142857142,
+      "recall@100": 0.12755102040816327
+    },
+    {
+      "request_id": 1255368640,
+      "n_candidates": 2103,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.065,
+      "recall@100": 0.145
+    },
+    {
+      "request_id": 1263572206,
+      "n_candidates": 2087,
+      "n_positives": 186,
+      "recall@10": 0.010752688172043012,
+      "recall@20": 0.016129032258064516,
+      "recall@50": 0.03763440860215054,
+      "recall@100": 0.08064516129032258
+    },
+    {
+      "request_id": 1269590919,
+      "n_candidates": 2119,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.005,
+      "recall@50": 0.01,
+      "recall@100": 0.03
+    },
+    {
+      "request_id": 1274918158,
+      "n_candidates": 2172,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.01,
+      "recall@50": 0.055,
+      "recall@100": 0.125
+    },
+    {
+      "request_id": 1277097099,
+      "n_candidates": 2156,
+      "n_positives": 194,
+      "recall@10": 0.010309278350515464,
+      "recall@20": 0.02577319587628866,
+      "recall@50": 0.061855670103092786,
+      "recall@100": 0.08247422680412371
+    },
+    {
+      "request_id": 1286077299,
+      "n_candidates": 2173,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.015,
+      "recall@50": 0.035,
+      "recall@100": 0.08
+    },
+    {
+      "request_id": 1286373790,
+      "n_candidates": 2171,
+      "n_positives": 194,
+      "recall@10": 0.015463917525773196,
+      "recall@20": 0.02577319587628866,
+      "recall@50": 0.030927835051546393,
+      "recall@100": 0.05154639175257732
+    },
+    {
+      "request_id": 1288088289,
+      "n_candidates": 1369,
+      "n_positives": 194,
+      "recall@10": 0.030927835051546393,
+      "recall@20": 0.04639175257731959,
+      "recall@50": 0.11855670103092783,
+      "recall@100": 0.21649484536082475
+    },
+    {
+      "request_id": 1293075399,
+      "n_candidates": 2155,
+      "n_positives": 188,
+      "recall@10": 0.015957446808510637,
+      "recall@20": 0.0425531914893617,
+      "recall@50": 0.05851063829787234,
+      "recall@100": 0.14361702127659576
+    },
+    {
+      "request_id": 1296836911,
+      "n_candidates": 2151,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.01,
+      "recall@50": 0.035,
+      "recall@100": 0.08
+    },
+    {
+      "request_id": 1303923662,
+      "n_candidates": 2115,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.01,
+      "recall@50": 0.03,
+      "recall@100": 0.055
+    },
+    {
+      "request_id": 1309335497,
+      "n_candidates": 899,
+      "n_positives": 200,
+      "recall@10": 0.04,
+      "recall@20": 0.055,
+      "recall@50": 0.085,
+      "recall@100": 0.155
+    },
+    {
+      "request_id": 1311323355,
+      "n_candidates": 2168,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.065,
+      "recall@50": 0.125,
+      "recall@100": 0.19
+    },
+    {
+      "request_id": 131673984,
+      "n_candidates": 2164,
+      "n_positives": 198,
+      "recall@10": 0.020202020202020204,
+      "recall@20": 0.030303030303030304,
+      "recall@50": 0.07575757575757576,
+      "recall@100": 0.14646464646464646
+    },
+    {
+      "request_id": 1322644162,
+      "n_candidates": 2188,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.02,
+      "recall@100": 0.055
+    },
+    {
+      "request_id": 1331783581,
+      "n_candidates": 2115,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.03,
+      "recall@100": 0.065
+    },
+    {
+      "request_id": 1333195288,
+      "n_candidates": 862,
+      "n_positives": 200,
+      "recall@10": 0.035,
+      "recall@20": 0.08,
+      "recall@50": 0.145,
+      "recall@100": 0.24
+    },
+    {
+      "request_id": 1346559635,
+      "n_candidates": 2148,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.015,
+      "recall@50": 0.03,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 1366807585,
+      "n_candidates": 1511,
+      "n_positives": 173,
+      "recall@10": 0.023121387283236993,
+      "recall@20": 0.05202312138728324,
+      "recall@50": 0.10982658959537572,
+      "recall@100": 0.2023121387283237
+    },
+    {
+      "request_id": 13749010,
+      "n_candidates": 2160,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.045,
+      "recall@100": 0.075
+    },
+    {
+      "request_id": 1376867513,
+      "n_candidates": 1288,
+      "n_positives": 178,
+      "recall@10": 0.0056179775280898875,
+      "recall@20": 0.016853932584269662,
+      "recall@50": 0.0449438202247191,
+      "recall@100": 0.09550561797752809
+    },
+    {
+      "request_id": 1381460202,
+      "n_candidates": 2133,
+      "n_positives": 199,
+      "recall@10": 0.01507537688442211,
+      "recall@20": 0.03015075376884422,
+      "recall@50": 0.05527638190954774,
+      "recall@100": 0.09045226130653267
+    },
+    {
+      "request_id": 1393885854,
+      "n_candidates": 2098,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.015,
+      "recall@50": 0.045,
+      "recall@100": 0.085
+    },
+    {
+      "request_id": 1402742603,
+      "n_candidates": 2175,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.025,
+      "recall@50": 0.04,
+      "recall@100": 0.125
+    },
+    {
+      "request_id": 1408196974,
+      "n_candidates": 2123,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.03,
+      "recall@100": 0.09
+    },
+    {
+      "request_id": 1414548238,
+      "n_candidates": 2156,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.025,
+      "recall@50": 0.07,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 1420248177,
+      "n_candidates": 2155,
+      "n_positives": 180,
+      "recall@10": 0.027777777777777776,
+      "recall@20": 0.06111111111111111,
+      "recall@50": 0.10555555555555556,
+      "recall@100": 0.20555555555555555
+    },
+    {
+      "request_id": 143615825,
+      "n_candidates": 2022,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.025,
+      "recall@50": 0.05,
+      "recall@100": 0.125
+    },
+    {
+      "request_id": 1459080495,
+      "n_candidates": 2042,
+      "n_positives": 200,
+      "recall@10": 0.035,
+      "recall@20": 0.065,
+      "recall@50": 0.135,
+      "recall@100": 0.225
+    },
+    {
+      "request_id": 1467921892,
+      "n_candidates": 2140,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.05,
+      "recall@50": 0.085,
+      "recall@100": 0.125
+    },
+    {
+      "request_id": 1469716100,
+      "n_candidates": 1889,
+      "n_positives": 200,
+      "recall@10": 0.035,
+      "recall@20": 0.04,
+      "recall@50": 0.07,
+      "recall@100": 0.1
+    },
+    {
+      "request_id": 147248536,
+      "n_candidates": 2156,
+      "n_positives": 199,
+      "recall@10": 0.01507537688442211,
+      "recall@20": 0.020100502512562814,
+      "recall@50": 0.03015075376884422,
+      "recall@100": 0.04020100502512563
+    },
+    {
+      "request_id": 147497246,
+      "n_candidates": 481,
+      "n_positives": 174,
+      "recall@10": 0.05747126436781609,
+      "recall@20": 0.11494252873563218,
+      "recall@50": 0.25862068965517243,
+      "recall@100": 0.3793103448275862
+    },
+    {
+      "request_id": 1481974192,
+      "n_candidates": 2172,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.02,
+      "recall@50": 0.035,
+      "recall@100": 0.05
+    },
+    {
+      "request_id": 1486841780,
+      "n_candidates": 1944,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.005025125628140704,
+      "recall@50": 0.020100502512562814,
+      "recall@100": 0.03015075376884422
+    },
+    {
+      "request_id": 1487899718,
+      "n_candidates": 1520,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.035,
+      "recall@50": 0.095,
+      "recall@100": 0.13
+    },
+    {
+      "request_id": 1495463361,
+      "n_candidates": 2175,
+      "n_positives": 192,
+      "recall@10": 0.026041666666666668,
+      "recall@20": 0.041666666666666664,
+      "recall@50": 0.06770833333333333,
+      "recall@100": 0.09375
+    },
+    {
+      "request_id": 1520881892,
+      "n_candidates": 2183,
+      "n_positives": 196,
+      "recall@10": 0.02040816326530612,
+      "recall@20": 0.04591836734693878,
+      "recall@50": 0.09183673469387756,
+      "recall@100": 0.14795918367346939
+    },
+    {
+      "request_id": 1528584809,
+      "n_candidates": 2154,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.03015075376884422,
+      "recall@50": 0.06532663316582915,
+      "recall@100": 0.10050251256281408
+    },
+    {
+      "request_id": 1529724640,
+      "n_candidates": 2090,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.055,
+      "recall@100": 0.09
+    },
+    {
+      "request_id": 1542797762,
+      "n_candidates": 902,
+      "n_positives": 175,
+      "recall@10": 0.04,
+      "recall@20": 0.08571428571428572,
+      "recall@50": 0.21142857142857144,
+      "recall@100": 0.33714285714285713
+    },
+    {
+      "request_id": 1564699554,
+      "n_candidates": 2137,
+      "n_positives": 187,
+      "recall@10": 0.016042780748663103,
+      "recall@20": 0.0213903743315508,
+      "recall@50": 0.053475935828877004,
+      "recall@100": 0.10160427807486631
+    },
+    {
+      "request_id": 1566843673,
+      "n_candidates": 2144,
+      "n_positives": 200,
+      "recall@10": 0.025,
+      "recall@20": 0.035,
+      "recall@50": 0.085,
+      "recall@100": 0.15
+    },
+    {
+      "request_id": 156802935,
+      "n_candidates": 837,
+      "n_positives": 135,
+      "recall@10": 0.0,
+      "recall@20": 0.014814814814814815,
+      "recall@50": 0.08148148148148149,
+      "recall@100": 0.18518518518518517
+    },
+    {
+      "request_id": 1568828288,
+      "n_candidates": 2130,
+      "n_positives": 199,
+      "recall@10": 0.005025125628140704,
+      "recall@20": 0.01507537688442211,
+      "recall@50": 0.05025125628140704,
+      "recall@100": 0.10050251256281408
+    },
+    {
+      "request_id": 157365058,
+      "n_candidates": 2145,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.025,
+      "recall@50": 0.065,
+      "recall@100": 0.095
+    },
+    {
+      "request_id": 1574276340,
+      "n_candidates": 1593,
+      "n_positives": 198,
+      "recall@10": 0.030303030303030304,
+      "recall@20": 0.06060606060606061,
+      "recall@50": 0.09090909090909091,
+      "recall@100": 0.16161616161616163
+    },
+    {
+      "request_id": 158144797,
+      "n_candidates": 2062,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.06,
+      "recall@50": 0.13,
+      "recall@100": 0.17
+    },
+    {
+      "request_id": 1587165499,
+      "n_candidates": 1632,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.035,
+      "recall@50": 0.09,
+      "recall@100": 0.135
+    },
+    {
+      "request_id": 1600057661,
+      "n_candidates": 2135,
+      "n_positives": 189,
+      "recall@10": 0.015873015873015872,
+      "recall@20": 0.037037037037037035,
+      "recall@50": 0.10052910052910052,
+      "recall@100": 0.1693121693121693
+    },
+    {
+      "request_id": 1619075711,
+      "n_candidates": 2127,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.04020100502512563,
+      "recall@50": 0.07035175879396985,
+      "recall@100": 0.11055276381909548
+    },
+    {
+      "request_id": 1619771370,
+      "n_candidates": 2173,
+      "n_positives": 186,
+      "recall@10": 0.021505376344086023,
+      "recall@20": 0.026881720430107527,
+      "recall@50": 0.08602150537634409,
+      "recall@100": 0.13978494623655913
+    },
+    {
+      "request_id": 1621203943,
+      "n_candidates": 1989,
+      "n_positives": 195,
+      "recall@10": 0.005128205128205128,
+      "recall@20": 0.035897435897435895,
+      "recall@50": 0.08717948717948718,
+      "recall@100": 0.15897435897435896
+    },
+    {
+      "request_id": 1628915338,
+      "n_candidates": 330,
+      "n_positives": 200,
+      "recall@10": 0.035,
+      "recall@20": 0.085,
+      "recall@50": 0.215,
+      "recall@100": 0.44
+    },
+    {
+      "request_id": 1634070421,
+      "n_candidates": 2160,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.05,
+      "recall@100": 0.07
+    },
+    {
+      "request_id": 1638494648,
+      "n_candidates": 2139,
+      "n_positives": 165,
+      "recall@10": 0.03636363636363636,
+      "recall@20": 0.06060606060606061,
+      "recall@50": 0.13333333333333333,
+      "recall@100": 0.2
+    },
+    {
+      "request_id": 1640302213,
+      "n_candidates": 2143,
+      "n_positives": 192,
+      "recall@10": 0.015625,
+      "recall@20": 0.015625,
+      "recall@50": 0.026041666666666668,
+      "recall@100": 0.06770833333333333
+    },
+    {
+      "request_id": 1640584418,
+      "n_candidates": 2159,
+      "n_positives": 187,
+      "recall@10": 0.016042780748663103,
+      "recall@20": 0.0374331550802139,
+      "recall@50": 0.09090909090909091,
+      "recall@100": 0.21390374331550802
+    },
+    {
+      "request_id": 1645339289,
+      "n_candidates": 2099,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.02,
+      "recall@50": 0.075,
+      "recall@100": 0.11
+    },
+    {
+      "request_id": 1646333369,
+      "n_candidates": 2140,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.01507537688442211,
+      "recall@100": 0.03015075376884422
+    },
+    {
+      "request_id": 1656466469,
+      "n_candidates": 348,
+      "n_positives": 154,
+      "recall@10": 0.06493506493506493,
+      "recall@20": 0.12987012987012986,
+      "recall@50": 0.2987012987012987,
+      "recall@100": 0.44155844155844154
+    },
+    {
+      "request_id": 1657348422,
+      "n_candidates": 1010,
+      "n_positives": 198,
+      "recall@10": 0.03535353535353535,
+      "recall@20": 0.06565656565656566,
+      "recall@50": 0.15151515151515152,
+      "recall@100": 0.21717171717171718
+    },
+    {
+      "request_id": 166357479,
+      "n_candidates": 2086,
+      "n_positives": 199,
+      "recall@10": 0.03015075376884422,
+      "recall@20": 0.06030150753768844,
+      "recall@50": 0.11557788944723618,
+      "recall@100": 0.18592964824120603
+    },
+    {
+      "request_id": 1666203552,
+      "n_candidates": 2164,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.01507537688442211,
+      "recall@50": 0.02512562814070352,
+      "recall@100": 0.06532663316582915
+    },
+    {
+      "request_id": 166706424,
+      "n_candidates": 2127,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.03,
+      "recall@50": 0.065,
+      "recall@100": 0.115
+    },
+    {
+      "request_id": 1672479457,
+      "n_candidates": 2148,
+      "n_positives": 199,
+      "recall@10": 0.010050251256281407,
+      "recall@20": 0.010050251256281407,
+      "recall@50": 0.02512562814070352,
+      "recall@100": 0.05527638190954774
+    },
+    {
+      "request_id": 1678480795,
+      "n_candidates": 1784,
+      "n_positives": 175,
+      "recall@10": 0.017142857142857144,
+      "recall@20": 0.045714285714285714,
+      "recall@50": 0.13142857142857142,
+      "recall@100": 0.22857142857142856
+    },
+    {
+      "request_id": 1690090840,
+      "n_candidates": 1921,
+      "n_positives": 187,
+      "recall@10": 0.0213903743315508,
+      "recall@20": 0.03208556149732621,
+      "recall@50": 0.053475935828877004,
+      "recall@100": 0.11764705882352941
+    },
+    {
+      "request_id": 1693268191,
+      "n_candidates": 2128,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.045,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 1695641627,
+      "n_candidates": 2140,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.035175879396984924,
+      "recall@50": 0.08040201005025126,
+      "recall@100": 0.1457286432160804
+    },
+    {
+      "request_id": 1696759474,
+      "n_candidates": 2114,
+      "n_positives": 193,
+      "recall@10": 0.015544041450777202,
+      "recall@20": 0.03626943005181347,
+      "recall@50": 0.08808290155440414,
+      "recall@100": 0.18652849740932642
+    },
+    {
+      "request_id": 1700176011,
+      "n_candidates": 2125,
+      "n_positives": 198,
+      "recall@10": 0.03535353535353535,
+      "recall@20": 0.06060606060606061,
+      "recall@50": 0.11616161616161616,
+      "recall@100": 0.20202020202020202
+    },
+    {
+      "request_id": 1716527088,
+      "n_candidates": 2126,
+      "n_positives": 199,
+      "recall@10": 0.02512562814070352,
+      "recall@20": 0.05025125628140704,
+      "recall@50": 0.12562814070351758,
+      "recall@100": 0.21105527638190955
+    },
+    {
+      "request_id": 1721996859,
+      "n_candidates": 780,
+      "n_positives": 156,
+      "recall@10": 0.04487179487179487,
+      "recall@20": 0.07692307692307693,
+      "recall@50": 0.11538461538461539,
+      "recall@100": 0.16666666666666666
+    },
+    {
+      "request_id": 1727512439,
+      "n_candidates": 2184,
+      "n_positives": 199,
+      "recall@10": 0.02512562814070352,
+      "recall@20": 0.035175879396984924,
+      "recall@50": 0.06532663316582915,
+      "recall@100": 0.11055276381909548
+    },
+    {
+      "request_id": 1745297953,
+      "n_candidates": 1220,
+      "n_positives": 181,
+      "recall@10": 0.016574585635359115,
+      "recall@20": 0.03314917127071823,
+      "recall@50": 0.06077348066298342,
+      "recall@100": 0.13259668508287292
+    },
+    {
+      "request_id": 174623131,
+      "n_candidates": 804,
+      "n_positives": 200,
+      "recall@10": 0.035,
+      "recall@20": 0.045,
+      "recall@50": 0.145,
+      "recall@100": 0.255
+    },
+    {
+      "request_id": 1756913981,
+      "n_candidates": 2172,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.01,
+      "recall@50": 0.04,
+      "recall@100": 0.08
+    },
+    {
+      "request_id": 1770098153,
+      "n_candidates": 2146,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.04,
+      "recall@50": 0.065,
+      "recall@100": 0.11
+    },
+    {
+      "request_id": 1774786916,
+      "n_candidates": 2124,
+      "n_positives": 199,
+      "recall@10": 0.02512562814070352,
+      "recall@20": 0.03015075376884422,
+      "recall@50": 0.04522613065326633,
+      "recall@100": 0.11055276381909548
+    },
+    {
+      "request_id": 1776301078,
+      "n_candidates": 2133,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.055,
+      "recall@100": 0.095
+    },
+    {
+      "request_id": 1777380893,
+      "n_candidates": 469,
+      "n_positives": 200,
+      "recall@10": 0.045,
+      "recall@20": 0.075,
+      "recall@50": 0.15,
+      "recall@100": 0.25
+    },
+    {
+      "request_id": 1782337066,
+      "n_candidates": 2054,
+      "n_positives": 179,
+      "recall@10": 0.0335195530726257,
+      "recall@20": 0.0670391061452514,
+      "recall@50": 0.13966480446927373,
+      "recall@100": 0.22905027932960895
+    },
+    {
+      "request_id": 1795230348,
+      "n_candidates": 2110,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.005,
+      "recall@50": 0.025,
+      "recall@100": 0.075
+    },
+    {
+      "request_id": 1800717888,
+      "n_candidates": 2120,
+      "n_positives": 200,
+      "recall@10": 0.05,
+      "recall@20": 0.07,
+      "recall@50": 0.11,
+      "recall@100": 0.2
+    },
+    {
+      "request_id": 180168808,
+      "n_candidates": 961,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.04,
+      "recall@50": 0.08,
+      "recall@100": 0.145
+    },
+    {
+      "request_id": 1802834654,
+      "n_candidates": 2156,
+      "n_positives": 179,
+      "recall@10": 0.03910614525139665,
+      "recall@20": 0.061452513966480445,
+      "recall@50": 0.1452513966480447,
+      "recall@100": 0.2569832402234637
+    },
+    {
+      "request_id": 1806492190,
+      "n_candidates": 2146,
+      "n_positives": 169,
+      "recall@10": 0.0,
+      "recall@20": 0.011834319526627219,
+      "recall@50": 0.03550295857988166,
+      "recall@100": 0.0650887573964497
+    },
+    {
+      "request_id": 1811637198,
+      "n_candidates": 873,
+      "n_positives": 192,
+      "recall@10": 0.020833333333333332,
+      "recall@20": 0.052083333333333336,
+      "recall@50": 0.109375,
+      "recall@100": 0.20833333333333334
+    },
+    {
+      "request_id": 181660947,
+      "n_candidates": 2154,
+      "n_positives": 184,
+      "recall@10": 0.021739130434782608,
+      "recall@20": 0.043478260869565216,
+      "recall@50": 0.09239130434782608,
+      "recall@100": 0.16304347826086957
+    },
+    {
+      "request_id": 1819023377,
+      "n_candidates": 2125,
+      "n_positives": 161,
+      "recall@10": 0.043478260869565216,
+      "recall@20": 0.055900621118012424,
+      "recall@50": 0.08695652173913043,
+      "recall@100": 0.11801242236024845
+    },
+    {
+      "request_id": 1828802370,
+      "n_candidates": 2080,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.045,
+      "recall@50": 0.08,
+      "recall@100": 0.1
+    },
+    {
+      "request_id": 1841602872,
+      "n_candidates": 2128,
+      "n_positives": 187,
+      "recall@10": 0.026737967914438502,
+      "recall@20": 0.03208556149732621,
+      "recall@50": 0.058823529411764705,
+      "recall@100": 0.0855614973262032
+    },
+    {
+      "request_id": 1846475257,
+      "n_candidates": 2168,
+      "n_positives": 191,
+      "recall@10": 0.005235602094240838,
+      "recall@20": 0.010471204188481676,
+      "recall@50": 0.02617801047120419,
+      "recall@100": 0.05235602094240838
+    },
+    {
+      "request_id": 1849715669,
+      "n_candidates": 1721,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.035,
+      "recall@50": 0.1,
+      "recall@100": 0.175
+    },
+    {
+      "request_id": 1854299004,
+      "n_candidates": 2174,
+      "n_positives": 196,
+      "recall@10": 0.02040816326530612,
+      "recall@20": 0.03571428571428571,
+      "recall@50": 0.07653061224489796,
+      "recall@100": 0.14795918367346939
+    },
+    {
+      "request_id": 1858287517,
+      "n_candidates": 2098,
+      "n_positives": 145,
+      "recall@10": 0.027586206896551724,
+      "recall@20": 0.06206896551724138,
+      "recall@50": 0.1103448275862069,
+      "recall@100": 0.2206896551724138
+    },
+    {
+      "request_id": 1868666476,
+      "n_candidates": 388,
+      "n_positives": 199,
+      "recall@10": 0.04522613065326633,
+      "recall@20": 0.08542713567839195,
+      "recall@50": 0.21105527638190955,
+      "recall@100": 0.37185929648241206
+    },
+    {
+      "request_id": 1873588435,
+      "n_candidates": 2169,
+      "n_positives": 181,
+      "recall@10": 0.03867403314917127,
+      "recall@20": 0.049723756906077346,
+      "recall@50": 0.10497237569060773,
+      "recall@100": 0.17679558011049723
+    },
+    {
+      "request_id": 1886337504,
+      "n_candidates": 1990,
+      "n_positives": 170,
+      "recall@10": 0.023529411764705882,
+      "recall@20": 0.03529411764705882,
+      "recall@50": 0.08235294117647059,
+      "recall@100": 0.18235294117647058
+    },
+    {
+      "request_id": 1892904454,
+      "n_candidates": 2071,
+      "n_positives": 151,
+      "recall@10": 0.039735099337748346,
+      "recall@20": 0.07947019867549669,
+      "recall@50": 0.152317880794702,
+      "recall@100": 0.2119205298013245
+    },
+    {
+      "request_id": 1895548930,
+      "n_candidates": 2162,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.055,
+      "recall@100": 0.095
+    },
+    {
+      "request_id": 190764799,
+      "n_candidates": 813,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.03015075376884422,
+      "recall@50": 0.07537688442211055,
+      "recall@100": 0.1306532663316583
+    },
+    {
+      "request_id": 1913763777,
+      "n_candidates": 2120,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.005,
+      "recall@50": 0.015,
+      "recall@100": 0.04
+    },
+    {
+      "request_id": 191455278,
+      "n_candidates": 2149,
+      "n_positives": 199,
+      "recall@10": 0.03015075376884422,
+      "recall@20": 0.04020100502512563,
+      "recall@50": 0.08040201005025126,
+      "recall@100": 0.1407035175879397
+    },
+    {
+      "request_id": 1915523714,
+      "n_candidates": 2164,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.035,
+      "recall@100": 0.105
+    },
+    {
+      "request_id": 1916264415,
+      "n_candidates": 2064,
+      "n_positives": 166,
+      "recall@10": 0.03614457831325301,
+      "recall@20": 0.04819277108433735,
+      "recall@50": 0.10240963855421686,
+      "recall@100": 0.14457831325301204
+    },
+    {
+      "request_id": 1923677569,
+      "n_candidates": 2175,
+      "n_positives": 199,
+      "recall@10": 0.010050251256281407,
+      "recall@20": 0.03015075376884422,
+      "recall@50": 0.06030150753768844,
+      "recall@100": 0.10552763819095477
+    },
+    {
+      "request_id": 1925192353,
+      "n_candidates": 2152,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.07,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 1930227486,
+      "n_candidates": 2093,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.005,
+      "recall@50": 0.025,
+      "recall@100": 0.055
+    },
+    {
+      "request_id": 1947208964,
+      "n_candidates": 2045,
+      "n_positives": 198,
+      "recall@10": 0.010101010101010102,
+      "recall@20": 0.025252525252525252,
+      "recall@50": 0.06060606060606061,
+      "recall@100": 0.1111111111111111
+    },
+    {
+      "request_id": 1948515439,
+      "n_candidates": 2165,
+      "n_positives": 195,
+      "recall@10": 0.0,
+      "recall@20": 0.03076923076923077,
+      "recall@50": 0.035897435897435895,
+      "recall@100": 0.046153846153846156
+    },
+    {
+      "request_id": 1949448431,
+      "n_candidates": 2116,
+      "n_positives": 197,
+      "recall@10": 0.01015228426395939,
+      "recall@20": 0.02030456852791878,
+      "recall@50": 0.05583756345177665,
+      "recall@100": 0.1065989847715736
+    },
+    {
+      "request_id": 1953276071,
+      "n_candidates": 2066,
+      "n_positives": 145,
+      "recall@10": 0.034482758620689655,
+      "recall@20": 0.04827586206896552,
+      "recall@50": 0.1310344827586207,
+      "recall@100": 0.23448275862068965
+    },
+    {
+      "request_id": 1964014767,
+      "n_candidates": 2154,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.035,
+      "recall@50": 0.075,
+      "recall@100": 0.135
+    },
+    {
+      "request_id": 1965393121,
+      "n_candidates": 2166,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.01,
+      "recall@50": 0.015,
+      "recall@100": 0.02
+    },
+    {
+      "request_id": 1980322080,
+      "n_candidates": 2133,
+      "n_positives": 200,
+      "recall@10": 0.025,
+      "recall@20": 0.045,
+      "recall@50": 0.06,
+      "recall@100": 0.115
+    },
+    {
+      "request_id": 1983491263,
+      "n_candidates": 2148,
+      "n_positives": 198,
+      "recall@10": 0.015151515151515152,
+      "recall@20": 0.020202020202020204,
+      "recall@50": 0.030303030303030304,
+      "recall@100": 0.06060606060606061
+    },
+    {
+      "request_id": 1986499779,
+      "n_candidates": 1084,
+      "n_positives": 163,
+      "recall@10": 0.018404907975460124,
+      "recall@20": 0.03680981595092025,
+      "recall@50": 0.08588957055214724,
+      "recall@100": 0.10429447852760736
+    },
+    {
+      "request_id": 1988824067,
+      "n_candidates": 2136,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.05,
+      "recall@100": 0.1
+    },
+    {
+      "request_id": 199259642,
+      "n_candidates": 2132,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.03,
+      "recall@50": 0.075,
+      "recall@100": 0.15
+    },
+    {
+      "request_id": 2006393976,
+      "n_candidates": 2150,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.055,
+      "recall@50": 0.085,
+      "recall@100": 0.155
+    },
+    {
+      "request_id": 2013067781,
+      "n_candidates": 2171,
+      "n_positives": 187,
+      "recall@10": 0.0106951871657754,
+      "recall@20": 0.026737967914438502,
+      "recall@50": 0.06417112299465241,
+      "recall@100": 0.13368983957219252
+    },
+    {
+      "request_id": 2022517049,
+      "n_candidates": 422,
+      "n_positives": 200,
+      "recall@10": 0.04,
+      "recall@20": 0.09,
+      "recall@50": 0.21,
+      "recall@100": 0.405
+    },
+    {
+      "request_id": 20251847,
+      "n_candidates": 2166,
+      "n_positives": 181,
+      "recall@10": 0.03867403314917127,
+      "recall@20": 0.06077348066298342,
+      "recall@50": 0.143646408839779,
+      "recall@100": 0.2154696132596685
+    },
+    {
+      "request_id": 2029856872,
+      "n_candidates": 2149,
+      "n_positives": 199,
+      "recall@10": 0.035175879396984924,
+      "recall@20": 0.06030150753768844,
+      "recall@50": 0.12562814070351758,
+      "recall@100": 0.21105527638190955
+    },
+    {
+      "request_id": 2033382759,
+      "n_candidates": 2148,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.04,
+      "recall@50": 0.085,
+      "recall@100": 0.135
+    },
+    {
+      "request_id": 2036695033,
+      "n_candidates": 2172,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.06,
+      "recall@50": 0.125,
+      "recall@100": 0.195
+    },
+    {
+      "request_id": 2041611164,
+      "n_candidates": 2112,
+      "n_positives": 195,
+      "recall@10": 0.03076923076923077,
+      "recall@20": 0.046153846153846156,
+      "recall@50": 0.07179487179487179,
+      "recall@100": 0.11794871794871795
+    },
+    {
+      "request_id": 2044741737,
+      "n_candidates": 2115,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.025,
+      "recall@50": 0.035,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 2045778328,
+      "n_candidates": 2152,
+      "n_positives": 192,
+      "recall@10": 0.015625,
+      "recall@20": 0.020833333333333332,
+      "recall@50": 0.057291666666666664,
+      "recall@100": 0.08333333333333333
+    },
+    {
+      "request_id": 2062213453,
+      "n_candidates": 2180,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.035,
+      "recall@50": 0.085,
+      "recall@100": 0.17
+    },
+    {
+      "request_id": 2069291621,
+      "n_candidates": 1560,
+      "n_positives": 143,
+      "recall@10": 0.04195804195804196,
+      "recall@20": 0.07692307692307693,
+      "recall@50": 0.2097902097902098,
+      "recall@100": 0.3146853146853147
+    },
+    {
+      "request_id": 2071246120,
+      "n_candidates": 2113,
+      "n_positives": 196,
+      "recall@10": 0.015306122448979591,
+      "recall@20": 0.03571428571428571,
+      "recall@50": 0.0663265306122449,
+      "recall@100": 0.14285714285714285
+    },
+    {
+      "request_id": 2075458151,
+      "n_candidates": 2124,
+      "n_positives": 199,
+      "recall@10": 0.005025125628140704,
+      "recall@20": 0.020100502512562814,
+      "recall@50": 0.05527638190954774,
+      "recall@100": 0.09045226130653267
+    },
+    {
+      "request_id": 2076177514,
+      "n_candidates": 2051,
+      "n_positives": 199,
+      "recall@10": 0.010050251256281407,
+      "recall@20": 0.010050251256281407,
+      "recall@50": 0.01507537688442211,
+      "recall@100": 0.03015075376884422
+    },
+    {
+      "request_id": 2077442815,
+      "n_candidates": 2111,
+      "n_positives": 199,
+      "recall@10": 0.02512562814070352,
+      "recall@20": 0.06532663316582915,
+      "recall@50": 0.11557788944723618,
+      "recall@100": 0.16080402010050251
+    },
+    {
+      "request_id": 2081457737,
+      "n_candidates": 2121,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.020100502512562814,
+      "recall@100": 0.03015075376884422
+    },
+    {
+      "request_id": 2084754187,
+      "n_candidates": 2148,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.06,
+      "recall@100": 0.125
+    },
+    {
+      "request_id": 2097331064,
+      "n_candidates": 2177,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.025,
+      "recall@50": 0.075,
+      "recall@100": 0.145
+    },
+    {
+      "request_id": 2115207743,
+      "n_candidates": 948,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.07,
+      "recall@100": 0.205
+    },
+    {
+      "request_id": 2119461446,
+      "n_candidates": 2150,
+      "n_positives": 178,
+      "recall@10": 0.016853932584269662,
+      "recall@20": 0.028089887640449437,
+      "recall@50": 0.06179775280898876,
+      "recall@100": 0.12921348314606743
+    },
+    {
+      "request_id": 2122557793,
+      "n_candidates": 2180,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.01,
+      "recall@50": 0.02,
+      "recall@100": 0.035
+    },
+    {
+      "request_id": 2134682160,
+      "n_candidates": 2166,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.04,
+      "recall@50": 0.075,
+      "recall@100": 0.125
+    },
+    {
+      "request_id": 2138783602,
+      "n_candidates": 2158,
+      "n_positives": 199,
+      "recall@10": 0.02512562814070352,
+      "recall@20": 0.04522613065326633,
+      "recall@50": 0.11055276381909548,
+      "recall@100": 0.1658291457286432
+    },
+    {
+      "request_id": 2144335146,
+      "n_candidates": 2123,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.05025125628140704,
+      "recall@50": 0.10552763819095477,
+      "recall@100": 0.1407035175879397
+    },
+    {
+      "request_id": 221186113,
+      "n_candidates": 2155,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.02,
+      "recall@50": 0.065,
+      "recall@100": 0.105
+    },
+    {
+      "request_id": 222429239,
+      "n_candidates": 2115,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.04,
+      "recall@50": 0.075,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 223891504,
+      "n_candidates": 2157,
+      "n_positives": 195,
+      "recall@10": 0.010256410256410256,
+      "recall@20": 0.02564102564102564,
+      "recall@50": 0.05641025641025641,
+      "recall@100": 0.07692307692307693
+    },
+    {
+      "request_id": 231886185,
+      "n_candidates": 2158,
+      "n_positives": 196,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.01020408163265306,
+      "recall@100": 0.04081632653061224
+    },
+    {
+      "request_id": 237153658,
+      "n_candidates": 2175,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.005,
+      "recall@50": 0.02,
+      "recall@100": 0.05
+    },
+    {
+      "request_id": 250631623,
+      "n_candidates": 2115,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.035175879396984924,
+      "recall@50": 0.05527638190954774,
+      "recall@100": 0.10552763819095477
+    },
+    {
+      "request_id": 256888562,
+      "n_candidates": 2167,
+      "n_positives": 195,
+      "recall@10": 0.015384615384615385,
+      "recall@20": 0.02564102564102564,
+      "recall@50": 0.05641025641025641,
+      "recall@100": 0.09230769230769231
+    },
+    {
+      "request_id": 271304705,
+      "n_candidates": 2102,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.015,
+      "recall@50": 0.035,
+      "recall@100": 0.09
+    },
+    {
+      "request_id": 286402932,
+      "n_candidates": 2101,
+      "n_positives": 196,
+      "recall@10": 0.0,
+      "recall@20": 0.01020408163265306,
+      "recall@50": 0.01020408163265306,
+      "recall@100": 0.04081632653061224
+    },
+    {
+      "request_id": 293436320,
+      "n_candidates": 461,
+      "n_positives": 160,
+      "recall@10": 0.01875,
+      "recall@20": 0.04375,
+      "recall@50": 0.11875,
+      "recall@100": 0.29375
+    },
+    {
+      "request_id": 305215587,
+      "n_candidates": 2024,
+      "n_positives": 171,
+      "recall@10": 0.03508771929824561,
+      "recall@20": 0.06432748538011696,
+      "recall@50": 0.12280701754385964,
+      "recall@100": 0.1695906432748538
+    },
+    {
+      "request_id": 3077886,
+      "n_candidates": 1255,
+      "n_positives": 184,
+      "recall@10": 0.02717391304347826,
+      "recall@20": 0.04891304347826087,
+      "recall@50": 0.07608695652173914,
+      "recall@100": 0.13043478260869565
+    },
+    {
+      "request_id": 313273115,
+      "n_candidates": 2139,
+      "n_positives": 184,
+      "recall@10": 0.021739130434782608,
+      "recall@20": 0.021739130434782608,
+      "recall@50": 0.043478260869565216,
+      "recall@100": 0.14130434782608695
+    },
+    {
+      "request_id": 315042827,
+      "n_candidates": 2149,
+      "n_positives": 190,
+      "recall@10": 0.015789473684210527,
+      "recall@20": 0.015789473684210527,
+      "recall@50": 0.06315789473684211,
+      "recall@100": 0.11052631578947368
+    },
+    {
+      "request_id": 315421845,
+      "n_candidates": 2149,
+      "n_positives": 187,
+      "recall@10": 0.0213903743315508,
+      "recall@20": 0.026737967914438502,
+      "recall@50": 0.0374331550802139,
+      "recall@100": 0.09090909090909091
+    },
+    {
+      "request_id": 318704203,
+      "n_candidates": 2121,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.065,
+      "recall@100": 0.09
+    },
+    {
+      "request_id": 32062248,
+      "n_candidates": 2124,
+      "n_positives": 198,
+      "recall@10": 0.025252525252525252,
+      "recall@20": 0.050505050505050504,
+      "recall@50": 0.09090909090909091,
+      "recall@100": 0.18686868686868688
+    },
+    {
+      "request_id": 322157606,
+      "n_candidates": 1811,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.065,
+      "recall@50": 0.135,
+      "recall@100": 0.245
+    },
+    {
+      "request_id": 325704017,
+      "n_candidates": 2187,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.015,
+      "recall@50": 0.035,
+      "recall@100": 0.08
+    },
+    {
+      "request_id": 329789831,
+      "n_candidates": 2151,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.01,
+      "recall@50": 0.015,
+      "recall@100": 0.05
+    },
+    {
+      "request_id": 335219716,
+      "n_candidates": 2128,
+      "n_positives": 183,
+      "recall@10": 0.00546448087431694,
+      "recall@20": 0.0273224043715847,
+      "recall@50": 0.07103825136612021,
+      "recall@100": 0.10382513661202186
+    },
+    {
+      "request_id": 336115518,
+      "n_candidates": 1908,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.06,
+      "recall@100": 0.095
+    },
+    {
+      "request_id": 365456026,
+      "n_candidates": 2159,
+      "n_positives": 181,
+      "recall@10": 0.011049723756906077,
+      "recall@20": 0.016574585635359115,
+      "recall@50": 0.04419889502762431,
+      "recall@100": 0.10497237569060773
+    },
+    {
+      "request_id": 365571784,
+      "n_candidates": 2121,
+      "n_positives": 197,
+      "recall@10": 0.025380710659898477,
+      "recall@20": 0.025380710659898477,
+      "recall@50": 0.03553299492385787,
+      "recall@100": 0.06091370558375635
+    },
+    {
+      "request_id": 368587082,
+      "n_candidates": 2164,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.05,
+      "recall@100": 0.065
+    },
+    {
+      "request_id": 379126281,
+      "n_candidates": 2162,
+      "n_positives": 187,
+      "recall@10": 0.0106951871657754,
+      "recall@20": 0.0213903743315508,
+      "recall@50": 0.06417112299465241,
+      "recall@100": 0.1497326203208556
+    },
+    {
+      "request_id": 384901800,
+      "n_candidates": 2093,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.0,
+      "recall@100": 0.03015075376884422
+    },
+    {
+      "request_id": 391542804,
+      "n_candidates": 2102,
+      "n_positives": 199,
+      "recall@10": 0.010050251256281407,
+      "recall@20": 0.020100502512562814,
+      "recall@50": 0.02512562814070352,
+      "recall@100": 0.04020100502512563
+    },
+    {
+      "request_id": 39245774,
+      "n_candidates": 2155,
+      "n_positives": 194,
+      "recall@10": 0.010309278350515464,
+      "recall@20": 0.02577319587628866,
+      "recall@50": 0.06701030927835051,
+      "recall@100": 0.12371134020618557
+    },
+    {
+      "request_id": 393615120,
+      "n_candidates": 2155,
+      "n_positives": 191,
+      "recall@10": 0.010471204188481676,
+      "recall@20": 0.015706806282722512,
+      "recall@50": 0.041884816753926704,
+      "recall@100": 0.07329842931937172
+    },
+    {
+      "request_id": 401775039,
+      "n_candidates": 2066,
+      "n_positives": 180,
+      "recall@10": 0.022222222222222223,
+      "recall@20": 0.03888888888888889,
+      "recall@50": 0.07222222222222222,
+      "recall@100": 0.1
+    },
+    {
+      "request_id": 4332146,
+      "n_candidates": 1142,
+      "n_positives": 186,
+      "recall@10": 0.053763440860215055,
+      "recall@20": 0.08064516129032258,
+      "recall@50": 0.17204301075268819,
+      "recall@100": 0.3225806451612903
+    },
+    {
+      "request_id": 440181083,
+      "n_candidates": 2119,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.085,
+      "recall@100": 0.205
+    },
+    {
+      "request_id": 449728048,
+      "n_candidates": 1590,
+      "n_positives": 199,
+      "recall@10": 0.01507537688442211,
+      "recall@20": 0.02512562814070352,
+      "recall@50": 0.05025125628140704,
+      "recall@100": 0.12060301507537688
+    },
+    {
+      "request_id": 46941529,
+      "n_candidates": 2134,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.065,
+      "recall@100": 0.105
+    },
+    {
+      "request_id": 479728488,
+      "n_candidates": 2151,
+      "n_positives": 197,
+      "recall@10": 0.03553299492385787,
+      "recall@20": 0.06091370558375635,
+      "recall@50": 0.14213197969543148,
+      "recall@100": 0.27918781725888325
+    },
+    {
+      "request_id": 518022043,
+      "n_candidates": 2134,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.01,
+      "recall@50": 0.035,
+      "recall@100": 0.065
+    },
+    {
+      "request_id": 521399528,
+      "n_candidates": 2171,
+      "n_positives": 192,
+      "recall@10": 0.010416666666666666,
+      "recall@20": 0.020833333333333332,
+      "recall@50": 0.046875,
+      "recall@100": 0.09895833333333333
+    },
+    {
+      "request_id": 540967500,
+      "n_candidates": 2173,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.01,
+      "recall@100": 0.03
+    },
+    {
+      "request_id": 546945356,
+      "n_candidates": 1938,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.04,
+      "recall@100": 0.08
+    },
+    {
+      "request_id": 553918880,
+      "n_candidates": 2125,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.01,
+      "recall@50": 0.07,
+      "recall@100": 0.105
+    },
+    {
+      "request_id": 559148004,
+      "n_candidates": 2011,
+      "n_positives": 198,
+      "recall@10": 0.025252525252525252,
+      "recall@20": 0.03535353535353535,
+      "recall@50": 0.06565656565656566,
+      "recall@100": 0.1414141414141414
+    },
+    {
+      "request_id": 560232056,
+      "n_candidates": 2126,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.04,
+      "recall@100": 0.05
+    },
+    {
+      "request_id": 563428211,
+      "n_candidates": 1737,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.07,
+      "recall@100": 0.145
+    },
+    {
+      "request_id": 566827503,
+      "n_candidates": 1548,
+      "n_positives": 196,
+      "recall@10": 0.03571428571428571,
+      "recall@20": 0.05612244897959184,
+      "recall@50": 0.12244897959183673,
+      "recall@100": 0.20408163265306123
+    },
+    {
+      "request_id": 569842882,
+      "n_candidates": 2108,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.03015075376884422,
+      "recall@50": 0.05527638190954774,
+      "recall@100": 0.09547738693467336
+    },
+    {
+      "request_id": 571358438,
+      "n_candidates": 2170,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.015,
+      "recall@50": 0.055,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 571918736,
+      "n_candidates": 2142,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.015,
+      "recall@50": 0.03,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 574956370,
+      "n_candidates": 2145,
+      "n_positives": 185,
+      "recall@10": 0.005405405405405406,
+      "recall@20": 0.010810810810810811,
+      "recall@50": 0.021621621621621623,
+      "recall@100": 0.05405405405405406
+    },
+    {
+      "request_id": 587658644,
+      "n_candidates": 2137,
+      "n_positives": 199,
+      "recall@10": 0.01507537688442211,
+      "recall@20": 0.020100502512562814,
+      "recall@50": 0.06532663316582915,
+      "recall@100": 0.11557788944723618
+    },
+    {
+      "request_id": 599879300,
+      "n_candidates": 2163,
+      "n_positives": 182,
+      "recall@10": 0.02197802197802198,
+      "recall@20": 0.038461538461538464,
+      "recall@50": 0.08241758241758242,
+      "recall@100": 0.14285714285714285
+    },
+    {
+      "request_id": 6264866,
+      "n_candidates": 2167,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.02,
+      "recall@50": 0.045,
+      "recall@100": 0.07
+    },
+    {
+      "request_id": 627122173,
+      "n_candidates": 2025,
+      "n_positives": 199,
+      "recall@10": 0.010050251256281407,
+      "recall@20": 0.010050251256281407,
+      "recall@50": 0.02512562814070352,
+      "recall@100": 0.05025125628140704
+    },
+    {
+      "request_id": 640778829,
+      "n_candidates": 2159,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.04020100502512563,
+      "recall@50": 0.07537688442211055,
+      "recall@100": 0.1306532663316583
+    },
+    {
+      "request_id": 643789192,
+      "n_candidates": 2146,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.035,
+      "recall@100": 0.055
+    },
+    {
+      "request_id": 645019961,
+      "n_candidates": 2124,
+      "n_positives": 193,
+      "recall@10": 0.02072538860103627,
+      "recall@20": 0.05181347150259067,
+      "recall@50": 0.09844559585492228,
+      "recall@100": 0.15025906735751296
+    },
+    {
+      "request_id": 65462495,
+      "n_candidates": 2167,
+      "n_positives": 195,
+      "recall@10": 0.010256410256410256,
+      "recall@20": 0.02564102564102564,
+      "recall@50": 0.08205128205128205,
+      "recall@100": 0.14358974358974358
+    },
+    {
+      "request_id": 66570068,
+      "n_candidates": 879,
+      "n_positives": 200,
+      "recall@10": 0.05,
+      "recall@20": 0.09,
+      "recall@50": 0.2,
+      "recall@100": 0.35
+    },
+    {
+      "request_id": 666529908,
+      "n_candidates": 2134,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.01,
+      "recall@50": 0.02,
+      "recall@100": 0.055
+    },
+    {
+      "request_id": 674661322,
+      "n_candidates": 2151,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.035,
+      "recall@50": 0.075,
+      "recall@100": 0.135
+    },
+    {
+      "request_id": 67797149,
+      "n_candidates": 2166,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.06,
+      "recall@100": 0.11
+    },
+    {
+      "request_id": 678700250,
+      "n_candidates": 2169,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.005,
+      "recall@50": 0.015,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 692305746,
+      "n_candidates": 2131,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.01,
+      "recall@50": 0.015,
+      "recall@100": 0.055
+    },
+    {
+      "request_id": 7022928,
+      "n_candidates": 2096,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.025,
+      "recall@50": 0.05,
+      "recall@100": 0.08
+    },
+    {
+      "request_id": 702848028,
+      "n_candidates": 2075,
+      "n_positives": 197,
+      "recall@10": 0.02030456852791878,
+      "recall@20": 0.030456852791878174,
+      "recall@50": 0.07106598984771574,
+      "recall@100": 0.16243654822335024
+    },
+    {
+      "request_id": 703952570,
+      "n_candidates": 2114,
+      "n_positives": 187,
+      "recall@10": 0.0213903743315508,
+      "recall@20": 0.03208556149732621,
+      "recall@50": 0.08021390374331551,
+      "recall@100": 0.1443850267379679
+    },
+    {
+      "request_id": 705126683,
+      "n_candidates": 2083,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.01,
+      "recall@50": 0.075,
+      "recall@100": 0.125
+    },
+    {
+      "request_id": 705385805,
+      "n_candidates": 2150,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.04,
+      "recall@100": 0.085
+    },
+    {
+      "request_id": 709522108,
+      "n_candidates": 2148,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.015,
+      "recall@50": 0.015,
+      "recall@100": 0.025
+    },
+    {
+      "request_id": 719340140,
+      "n_candidates": 2145,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.03,
+      "recall@50": 0.05,
+      "recall@100": 0.075
+    },
+    {
+      "request_id": 720439714,
+      "n_candidates": 2136,
+      "n_positives": 176,
+      "recall@10": 0.03977272727272727,
+      "recall@20": 0.07386363636363637,
+      "recall@50": 0.13636363636363635,
+      "recall@100": 0.21022727272727273
+    },
+    {
+      "request_id": 721698571,
+      "n_candidates": 2167,
+      "n_positives": 192,
+      "recall@10": 0.005208333333333333,
+      "recall@20": 0.010416666666666666,
+      "recall@50": 0.020833333333333332,
+      "recall@100": 0.07291666666666667
+    },
+    {
+      "request_id": 723581456,
+      "n_candidates": 2130,
+      "n_positives": 164,
+      "recall@10": 0.018292682926829267,
+      "recall@20": 0.054878048780487805,
+      "recall@50": 0.10365853658536585,
+      "recall@100": 0.1951219512195122
+    },
+    {
+      "request_id": 731722130,
+      "n_candidates": 2065,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.01,
+      "recall@100": 0.02
+    },
+    {
+      "request_id": 732248591,
+      "n_candidates": 2121,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.025,
+      "recall@50": 0.065,
+      "recall@100": 0.1
+    },
+    {
+      "request_id": 738645528,
+      "n_candidates": 1559,
+      "n_positives": 199,
+      "recall@10": 0.020100502512562814,
+      "recall@20": 0.04020100502512563,
+      "recall@50": 0.08040201005025126,
+      "recall@100": 0.15577889447236182
+    },
+    {
+      "request_id": 745271870,
+      "n_candidates": 2059,
+      "n_positives": 200,
+      "recall@10": 0.01,
+      "recall@20": 0.015,
+      "recall@50": 0.055,
+      "recall@100": 0.095
+    },
+    {
+      "request_id": 752965202,
+      "n_candidates": 2038,
+      "n_positives": 167,
+      "recall@10": 0.023952095808383235,
+      "recall@20": 0.041916167664670656,
+      "recall@50": 0.07784431137724551,
+      "recall@100": 0.11377245508982035
+    },
+    {
+      "request_id": 761354285,
+      "n_candidates": 2124,
+      "n_positives": 175,
+      "recall@10": 0.03428571428571429,
+      "recall@20": 0.06857142857142857,
+      "recall@50": 0.16,
+      "recall@100": 0.2057142857142857
+    },
+    {
+      "request_id": 764137137,
+      "n_candidates": 1105,
+      "n_positives": 191,
+      "recall@10": 0.031413612565445025,
+      "recall@20": 0.05235602094240838,
+      "recall@50": 0.08900523560209424,
+      "recall@100": 0.18848167539267016
+    },
+    {
+      "request_id": 765423954,
+      "n_candidates": 2112,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.01,
+      "recall@50": 0.015,
+      "recall@100": 0.04
+    },
+    {
+      "request_id": 778795777,
+      "n_candidates": 2177,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.025,
+      "recall@50": 0.08,
+      "recall@100": 0.115
+    },
+    {
+      "request_id": 779861828,
+      "n_candidates": 2101,
+      "n_positives": 199,
+      "recall@10": 0.0,
+      "recall@20": 0.02512562814070352,
+      "recall@50": 0.02512562814070352,
+      "recall@100": 0.08040201005025126
+    },
+    {
+      "request_id": 78892643,
+      "n_candidates": 2134,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.04,
+      "recall@100": 0.065
+    },
+    {
+      "request_id": 790948664,
+      "n_candidates": 1105,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.015,
+      "recall@50": 0.035,
+      "recall@100": 0.095
+    },
+    {
+      "request_id": 796886714,
+      "n_candidates": 503,
+      "n_positives": 173,
+      "recall@10": 0.03468208092485549,
+      "recall@20": 0.07514450867052024,
+      "recall@50": 0.17341040462427745,
+      "recall@100": 0.3352601156069364
+    },
+    {
+      "request_id": 799001525,
+      "n_candidates": 2155,
+      "n_positives": 192,
+      "recall@10": 0.010416666666666666,
+      "recall@20": 0.010416666666666666,
+      "recall@50": 0.026041666666666668,
+      "recall@100": 0.06770833333333333
+    },
+    {
+      "request_id": 802082930,
+      "n_candidates": 937,
+      "n_positives": 170,
+      "recall@10": 0.047058823529411764,
+      "recall@20": 0.09411764705882353,
+      "recall@50": 0.18823529411764706,
+      "recall@100": 0.3176470588235294
+    },
+    {
+      "request_id": 815217966,
+      "n_candidates": 2089,
+      "n_positives": 197,
+      "recall@10": 0.015228426395939087,
+      "recall@20": 0.02030456852791878,
+      "recall@50": 0.05583756345177665,
+      "recall@100": 0.116751269035533
+    },
+    {
+      "request_id": 827143121,
+      "n_candidates": 2145,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.06,
+      "recall@100": 0.115
+    },
+    {
+      "request_id": 832869467,
+      "n_candidates": 2116,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.025,
+      "recall@50": 0.06,
+      "recall@100": 0.105
+    },
+    {
+      "request_id": 836046313,
+      "n_candidates": 2144,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.005,
+      "recall@50": 0.015,
+      "recall@100": 0.02
+    },
+    {
+      "request_id": 839342466,
+      "n_candidates": 2126,
+      "n_positives": 199,
+      "recall@10": 0.035175879396984924,
+      "recall@20": 0.05025125628140704,
+      "recall@50": 0.11055276381909548,
+      "recall@100": 0.16080402010050251
+    },
+    {
+      "request_id": 846288266,
+      "n_candidates": 2143,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.005,
+      "recall@50": 0.01,
+      "recall@100": 0.04
+    },
+    {
+      "request_id": 846384351,
+      "n_candidates": 2140,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.01,
+      "recall@50": 0.04,
+      "recall@100": 0.075
+    },
+    {
+      "request_id": 85943476,
+      "n_candidates": 2135,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.025,
+      "recall@50": 0.03,
+      "recall@100": 0.06
+    },
+    {
+      "request_id": 861031999,
+      "n_candidates": 2160,
+      "n_positives": 196,
+      "recall@10": 0.0,
+      "recall@20": 0.00510204081632653,
+      "recall@50": 0.02040816326530612,
+      "recall@100": 0.04081632653061224
+    },
+    {
+      "request_id": 864841271,
+      "n_candidates": 2175,
+      "n_positives": 193,
+      "recall@10": 0.02072538860103627,
+      "recall@20": 0.03626943005181347,
+      "recall@50": 0.06735751295336788,
+      "recall@100": 0.09326424870466321
+    },
+    {
+      "request_id": 865871481,
+      "n_candidates": 2063,
+      "n_positives": 152,
+      "recall@10": 0.02631578947368421,
+      "recall@20": 0.046052631578947366,
+      "recall@50": 0.07236842105263158,
+      "recall@100": 0.14473684210526316
+    },
+    {
+      "request_id": 868233061,
+      "n_candidates": 1469,
+      "n_positives": 198,
+      "recall@10": 0.020202020202020204,
+      "recall@20": 0.045454545454545456,
+      "recall@50": 0.11616161616161616,
+      "recall@100": 0.2222222222222222
+    },
+    {
+      "request_id": 871537142,
+      "n_candidates": 2088,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.015,
+      "recall@100": 0.045
+    },
+    {
+      "request_id": 881659494,
+      "n_candidates": 2121,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.035,
+      "recall@50": 0.07,
+      "recall@100": 0.11
+    },
+    {
+      "request_id": 884971243,
+      "n_candidates": 2133,
+      "n_positives": 200,
+      "recall@10": 0.03,
+      "recall@20": 0.06,
+      "recall@50": 0.105,
+      "recall@100": 0.215
+    },
+    {
+      "request_id": 919821025,
+      "n_candidates": 2167,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.03,
+      "recall@50": 0.06,
+      "recall@100": 0.12
+    },
+    {
+      "request_id": 935940116,
+      "n_candidates": 2132,
+      "n_positives": 195,
+      "recall@10": 0.046153846153846156,
+      "recall@20": 0.06666666666666667,
+      "recall@50": 0.13333333333333333,
+      "recall@100": 0.2358974358974359
+    },
+    {
+      "request_id": 937259355,
+      "n_candidates": 2181,
+      "n_positives": 200,
+      "recall@10": 0.035,
+      "recall@20": 0.06,
+      "recall@50": 0.095,
+      "recall@100": 0.15
+    },
+    {
+      "request_id": 940039082,
+      "n_candidates": 2009,
+      "n_positives": 200,
+      "recall@10": 0.035,
+      "recall@20": 0.05,
+      "recall@50": 0.1,
+      "recall@100": 0.175
+    },
+    {
+      "request_id": 940281979,
+      "n_candidates": 2143,
+      "n_positives": 200,
+      "recall@10": 0.025,
+      "recall@20": 0.06,
+      "recall@50": 0.115,
+      "recall@100": 0.175
+    },
+    {
+      "request_id": 943714571,
+      "n_candidates": 2161,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.0,
+      "recall@100": 0.0
+    },
+    {
+      "request_id": 944474955,
+      "n_candidates": 2093,
+      "n_positives": 200,
+      "recall@10": 0.015,
+      "recall@20": 0.02,
+      "recall@50": 0.03,
+      "recall@100": 0.065
+    },
+    {
+      "request_id": 945337268,
+      "n_candidates": 2137,
+      "n_positives": 200,
+      "recall@10": 0.025,
+      "recall@20": 0.055,
+      "recall@50": 0.105,
+      "recall@100": 0.185
+    },
+    {
+      "request_id": 964730411,
+      "n_candidates": 2032,
+      "n_positives": 147,
+      "recall@10": 0.034013605442176874,
+      "recall@20": 0.07482993197278912,
+      "recall@50": 0.1292517006802721,
+      "recall@100": 0.2108843537414966
+    },
+    {
+      "request_id": 979825954,
+      "n_candidates": 2157,
+      "n_positives": 200,
+      "recall@10": 0.02,
+      "recall@20": 0.02,
+      "recall@50": 0.025,
+      "recall@100": 0.04
+    },
+    {
+      "request_id": 985907363,
+      "n_candidates": 2095,
+      "n_positives": 198,
+      "recall@10": 0.010101010101010102,
+      "recall@20": 0.025252525252525252,
+      "recall@50": 0.06060606060606061,
+      "recall@100": 0.1111111111111111
+    },
+    {
+      "request_id": 986011710,
+      "n_candidates": 1048,
+      "n_positives": 127,
+      "recall@10": 0.023622047244094488,
+      "recall@20": 0.031496062992125984,
+      "recall@50": 0.047244094488188976,
+      "recall@100": 0.11811023622047244
+    },
+    {
+      "request_id": 986234155,
+      "n_candidates": 1222,
+      "n_positives": 200,
+      "recall@10": 0.005,
+      "recall@20": 0.02,
+      "recall@50": 0.05,
+      "recall@100": 0.145
+    },
+    {
+      "request_id": 994620465,
+      "n_candidates": 2168,
+      "n_positives": 200,
+      "recall@10": 0.025,
+      "recall@20": 0.035,
+      "recall@50": 0.045,
+      "recall@100": 0.07
+    },
+    {
+      "request_id": 997767905,
+      "n_candidates": 2110,
+      "n_positives": 200,
+      "recall@10": 0.0,
+      "recall@20": 0.0,
+      "recall@50": 0.0,
+      "recall@100": 0.015
+    },
+    {
+      "request_id": 998693452,
+      "n_candidates": 2164,
+      "n_positives": 185,
+      "recall@10": 0.032432432432432434,
+      "recall@20": 0.03783783783783784,
+      "recall@50": 0.07567567567567568,
+      "recall@100": 0.15675675675675677
+    }
+  ]
+}

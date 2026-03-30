@@ -1,0 +1,21 @@
+# Data (symlinked/large)
+data
+data_enriched/
+
+# Generated user contexts
+requests/
+
+# Benchmark outputs
+outputs/
+
+# Evaluation results (keep baseline, gitignore per-run)
+evaluation/results/cc_*.json
+evaluation/results/mock*.json
+evaluation/history.json
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Temp files
+*.tmp
