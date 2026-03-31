@@ -64,7 +64,10 @@ def cluster_explorer(
         # Distances to centroid
         dists = np.linalg.norm(ad_embs[indices] - centroids[cid], axis=1)
         k = min(top_k_per_cluster, len(indices))
-        top_idx = np.argpartition(dists, k)[:k]
+        if k >= len(indices):
+            top_idx = np.arange(len(indices))
+        else:
+            top_idx = np.argpartition(dists, k)[:k]
         top_idx = top_idx[np.argsort(dists[top_idx])]
 
         for i in top_idx:
