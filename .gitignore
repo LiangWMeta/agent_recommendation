@@ -23,3 +23,5 @@ __pycache__/
 # Bulk eval extracted data
 data_bulk_eval/
 requests_bulk_eval/
+data_split/
+requests_split/
