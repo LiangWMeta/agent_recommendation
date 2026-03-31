@@ -25,3 +25,5 @@ data_bulk_eval/
 requests_bulk_eval/
 data_split/
 requests_split/
+batch_rankings.json
+.claude/
