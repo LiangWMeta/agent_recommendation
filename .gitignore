@@ -19,3 +19,7 @@ __pycache__/
 
 # Temp files
 *.tmp
+
+# Bulk eval extracted data
+data_bulk_eval/
+requests_bulk_eval/
