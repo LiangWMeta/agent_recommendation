@@ -56,6 +56,32 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 
 **Production pipeline simulated**: AP (190K) → PM (11K) → AI (709) → AF (84)
 
+## Tools (15 total)
+
+### Production Track
+
+| Tool | Production Component | Stage |
+|------|---------------------|-------|
+| `pselect_main_route` | PSelect / TTSN Main Route (primary ANN retrieval) | AP/PM |
+| `forced_retrieval` | Forced Retrieval (85% of impressions, independent route) | AP |
+| `prod_model_ranker` | SlimDSNN PM (calibrated CTR prediction) | PM |
+| `hsnn_cluster_scorer` | HSNN (hierarchical cluster scoring, sublinear cost) | AP/PM |
+| `pipeline_simulator` | Cascaded pipeline (AP→PM→AI→AF simulation) | All |
+| `ml_reducer` | ML Reducer/Truncator (replaces heuristic truncation) | PM/AI |
+| `parallel_routes_blender` | PRM + ML Blender (multi-route integration) | PM |
+
+### Exploration Track
+
+| Tool | Purpose |
+|------|---------|
+| `anti_negative_scorer` | Directional scoring: toward positive, away from negative centroids |
+| `cluster_explorer` | Flat K-means clustering (HSNN baseline) |
+| `similar_ads_lookup` | Ad-to-ad expansion from engaged ads |
+| `mmr_reranker` | Maximal Marginal Relevance diversity re-ranking |
+| `feature_filter` | Embedding feature filtering |
+
+### Diagnostics: `engagement_pattern_analyzer`, `ads_pool_stats`, `lookup_similar_requests`
+
 ## Pilot Results (10 requests)
 
 | Finding | Numbers | Implication |
