@@ -113,12 +113,17 @@ Claude's adaptive reasoning adds **+1.93%** recall@100 over fixed-weight RRF.
 /recommend --requests 20 --run-id my_run   # Run agent on 20 requests
 /analyze --run-id my_run                   # Analyze results + suggest improvements
 /modify "add a new retrieval route"        # Evolve the system
+```
 
-# Using scripts directly (see data/datasets.md for full registry)
-python3 scripts/create_split_data.py --data-dir data/local/model/raw
-python3 scripts/run_baseline_weighted.py --run-id my_run --data-dir data/local/model/split --max-requests 20
-python3 scripts/run_pilot_diagnosis.py --max-requests 20
-python3 evaluation/evaluate.py --run-id my_run
+`/recommend` uses a two-phase approach:
+1. **Pre-compute** all tool results via Python (fast, ~3s/request)
+2. **Spawn parallel Agent subagents** to reason over results (no subprocess startup overhead)
+
+```bash
+# Or use scripts directly (see data/datasets.md for full registry)
+python3 scripts/precompute_tool_results.py --max-requests 20   # Phase 1: pre-compute
+python3 scripts/run_baseline_weighted.py --run-id my_run --max-requests 20  # Fixed-weight RRF
+python3 evaluation/evaluate.py --run-id my_run                 # Evaluate
 ```
 
 ## Directory Structure
