@@ -47,6 +47,14 @@ When `similarity_gap < 0.01`:
 5. Within each cluster, rank ads by distance to cluster centroid (closest first)
 6. This outperforms embedding-first by ~2-3x on weak-signal requests
 
+## Pipeline Diagnosis Findings (2026-03-31, 5 requests)
+
+1. **PM truncation loses 70% of positives** — the single largest bottleneck. prod_prediction (SlimDSNN CTR) is not well-aligned with engagement labels, causing good ads to be cut.
+2. **FR Centroid is 5.5x more valuable than embedding search** — 15.4 unique positives vs 2.8 per request, with only 8.6% overlap. It should receive higher blending weight.
+3. **HSNN and embedding search are 77% redundant** — HSNN mostly rediscovers what embedding already finds. Reducing HSNN expansion (k=2 vs k=3) saves compute with no recall loss.
+4. **ML Reducer outperforms heuristic by +8.7%** — preserves 68.6% vs 60.0% of positives at 50% reduction.
+5. **similar_ads_lookup and anti_negative_scorer each add ~0.8% recall** — they find genuinely different positives from production routes. cluster_explorer adds nothing (-0.01%).
+
 ## Historical Patterns
 <!-- Updated automatically by scripts/update_learnings.py after each benchmark run -->
 
