@@ -1,20 +1,33 @@
 # Recommendation Reasoning Guidelines
 
-## Available Tools (11 total)
+## Available Tools (15 total)
 
+### Production Track
+| Tool | What it does | Stage | When to use |
+|------|-------------|-------|-------------|
+| `embedding_similarity_search` | Cosine search by user embedding | AP/PM | Strong signal only |
+| `fr_centroid_search` | Search by centroid of engaged ads (FR-like) | AP | ALWAYS — independent route |
+| `prod_model_ranker` | Rank by production model prediction (calibrated CTR) | PM | When available |
+| `hsnn_cluster_scorer` | Hierarchical 2-level cluster scoring (HSNN) | AP/PM | ALWAYS — sublinear exploration |
+| `pipeline_simulator` | Simulate cascaded pipeline (AP→PM→AI→AF) | All | E2E reasoning |
+| `ml_reducer` | ML-driven truncation (replaces heuristic) | PM/AI | After multi-route retrieval |
+| `parallel_routes_blender` | Multi-route blending (PRM + ML Blender) | PM | Aggregation phase |
+
+### Exploration Track
 | Tool | What it does | When to use |
 |------|-------------|-------------|
-| `engagement_pattern_analyzer` | Diagnostics: signal quality, cluster engagement | ALWAYS first |
-| `lookup_similar_requests` | Historical learning from past runs | After diagnostics |
-| `embedding_similarity_search` | Cosine search by user embedding | Strong signal only |
-| `fr_centroid_search` | Search by centroid of engaged ads (FR-like) | ALWAYS — independent route |
-| `anti_negative_scorer` | Directional: toward engaged, away from ignored | Moderate/strong signal |
-| `cluster_explorer` | Cluster-based retrieval with engagement rates | ALWAYS — especially weak signal |
-| `similar_ads_lookup` | Expand from reference ads | Expansion phase |
-| `feature_filter` | Filter by embedding-derived features | Targeting |
-| `prod_model_ranker` | Rank by production model prediction (calibrated CTR) | When available |
-| `mmr_reranker` | Re-rank for diversity (MMR) | Final aggregation |
+| `anti_negative_scorer` | Directional: toward engaged, away from ignored | Moderate/strong signal — compare vs production routes |
+| `cluster_explorer` | Flat K-means with engagement rates | HSNN baseline comparison |
+| `similar_ads_lookup` | Expand from reference ads | Ad-to-ad expansion hypothesis |
+| `mmr_reranker` | Re-rank for diversity (MMR) | Final diversity pass |
+| `feature_filter` | Filter by embedding-derived features | Feature hypothesis testing |
+
+### Diagnostics Track
+| Tool | What it does | When to use |
+|------|-------------|-------------|
+| `engagement_pattern_analyzer` | Signal quality diagnostics | ALWAYS first |
 | `ads_pool_stats` | Pool statistics | Understanding phase |
+| `lookup_similar_requests` | Historical learning from past runs | After diagnostics |
 
 ## Adaptive Strategy Framework
 
@@ -37,43 +50,69 @@ Call `lookup_similar_requests` and `fr_centroid_search` in parallel:
 **Strong Signal** (similarity_gap > 0.05):
 1. `embedding_similarity_search(top_k=150)` — primary
 2. `fr_centroid_search(top_k=100)` — independent second route
-3. `anti_negative_scorer(top_k=50)` — directional refinement
+3. `hsnn_cluster_scorer(expand_top_k_coarse=3)` — hierarchical exploration
 4. `prod_model_ranker(top_k=50)` — production model signal (if available)
-5. Merge all routes, rank by weighted score
+5. Blend via `parallel_routes_blender`
 
 **Weak Signal** (similarity_gap < 0.01):
-1. `fr_centroid_search(top_k=150)` — PRIMARY route (centroid_gap is usually >> user_gap)
-2. `cluster_explorer` — get engagement rates, allocate by rate
+1. `fr_centroid_search(top_k=150)` — PRIMARY route
+2. `hsnn_cluster_scorer(expand_top_k_coarse=5)` — expand more clusters for exploration
 3. `prod_model_ranker(top_k=100)` — production model doesn't depend on user embedding
 4. DO NOT rely on `embedding_similarity_search` — it's random
-5. Rank by: centroid score + cluster engagement rate + prod_prediction
+5. Blend via `parallel_routes_blender`
 
 **Moderate Signal** (0.01 < similarity_gap < 0.05):
 1. `fr_centroid_search(top_k=100)` + `embedding_similarity_search(top_k=100)` — equal weight
-2. `anti_negative_scorer(top_k=50)` — directional
-3. `cluster_explorer` for engaged cluster coverage
-4. Blend: 40% centroid + 30% embedding + 20% cluster + 10% prod
+2. `hsnn_cluster_scorer(expand_top_k_coarse=3)` — hierarchical exploration
+3. `prod_model_ranker(top_k=50)` — if available
+4. Blend via `parallel_routes_blender`
 
-### Step 4: Aggregate with MMR Diversity
+### Step 4: Pipeline-Aware Aggregation
 
-After merging all route results:
-1. De-duplicate by ad_id
-2. Collect all unique candidates (aim for 200+)
-3. Call `mmr_reranker(candidate_ad_ids=all_unique, lambda_param=0.7, top_k=150)`
-4. MMR balances relevance (cosine to user) with diversity (reduces near-duplicates)
-5. Output the MMR-reranked list as your final `ranked_ads`
+After multi-route retrieval, reason about the full pipeline:
+
+1. **Blend routes**: Call `parallel_routes_blender` with all route results. Use "rrf" for quick runs, "ml_blender" for research.
+2. **Simulate truncation**: Call `ml_reducer` on the blended result to see which ads would survive PM truncation. Ads that don't survive `ml_reducer(reduction_rate=0.5)` probably don't survive PM in production.
+3. **Check pipeline**: Call `pipeline_simulator(stage="all")` to see the full cascade. Note which ads survive each stage and where value is lost.
+4. **Focus on survivors**: Prioritize ads that survive downstream stages. An ad ranking #1 at PM but #500 at AI will not be shown.
+5. **Apply diversity**: Call `mmr_reranker` as final step for diversity.
 
 ### Step 5: Validate Before Output
 
 - Check your final list has > 100 ads
 - Verify coverage: are top-engaged clusters represented?
 - If `prod_model_ranker` returned "available: false", note it but proceed without
+- Check `pipeline_simulator` cross-stage consistency — flag any large rank inversions
+
+## Exploration Reasoning
+
+Use exploration track tools when:
+- **Weak signal** (similarity_gap < 0.01) and production routes show low recall
+- **Hypothesis testing** — you want to validate whether an approach adds value
+- **Benchmarking** — comparing exploration routes against production routes
+
+### When to use each exploration tool:
+
+**`anti_negative_scorer`**: Use when engagement analyzer shows moderate+ signal. Compare its unique contributions vs production routes. If it finds positives that production routes miss AND they survive pipeline stages, that validates directional scoring as a PRM route.
+
+**`cluster_explorer`**: Use as HSNN baseline. If flat clustering finds ads that HSNN misses, HSNN's hierarchy may need tuning. If HSNN largely subsumes it, confirms HSNN is sufficient.
+
+**`similar_ads_lookup`**: Use for "more-like-this" expansion from top engaged ads. Track whether expanded ads survive pipeline stages. High survival rate validates Related Ads as a production route.
+
+**`mmr_reranker`**: Apply as final diversity pass. Measure recall vs diversity tradeoff. If NDCG improves without recall loss, diversity mechanism is net positive.
+
+**`feature_filter`**: Use for hypothesis testing (e.g., "do high-norm ads survive PM better?"). Results inform feature engineering for ML Reducer.
+
+### Key principle:
+Always compare exploration route output against production route output to measure **incremental value**. An exploration tool is only valuable if it finds positive ads that production routes miss.
 
 ## Key Principles
 
-1. **FR centroid is always your strongest independent signal** — use it on every request
-2. **User embedding is conditional** — only trust it when similarity_gap > 0.01
-3. **Multi-route is always better than single-route** — different routes find different candidates
-4. **Use actual numbers from tools** — don't invent engagement rates or cluster statistics
-5. **Production model prediction (prod_prediction)** is the ground truth for ad quality — use it when available
-6. **MMR prevents redundancy** — always apply it as the final step
+1. **Production routes first, exploration second** — use production track as your primary retrieval, exploration for research
+2. **FR centroid is always your strongest independent signal** — use it on every request
+3. **User embedding is conditional** — only trust it when similarity_gap > 0.01
+4. **Pipeline survival matters more than single-stage scoring** — focus on ads that survive downstream
+5. **Multi-route is always better than single-route** — different routes find different candidates
+6. **Production model prediction (prod_prediction)** is the ground truth for ad quality — use it when available
+7. **HSNN subsumes flat clustering** — prefer `hsnn_cluster_scorer` over `cluster_explorer` for retrieval
+8. **Measure incremental value** — every exploration route should justify itself against production baselines

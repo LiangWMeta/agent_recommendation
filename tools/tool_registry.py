@@ -10,6 +10,10 @@ from tools.history_lookup import lookup_similar_requests
 from tools.fr_centroid_search import fr_centroid_search
 from tools.anti_negative_scorer import anti_negative_scorer
 from tools.mmr_reranker import mmr_reranker
+from tools.pipeline_simulator import pipeline_simulator
+from tools.hsnn_cluster_scorer import hsnn_cluster_scorer
+from tools.ml_reducer import ml_reducer
+from tools.parallel_routes_blender import parallel_routes_blender
 
 
 TOOLS: List[Dict[str, Any]] = [
@@ -260,6 +264,149 @@ TOOLS: List[Dict[str, Any]] = [
             "required": ["candidate_ad_ids"],
         },
     },
+    {
+        "name": "pipeline_simulator",
+        "description": (
+            "Simulate the production cascaded pipeline (AP→PM→AI→AF). "
+            "Shows per-stage survival of positive ads, cross-stage rank correlation, "
+            "and drop-off analysis. Use to understand where good ads are lost."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "stage": {
+                    "type": "string",
+                    "enum": ["all", "AP", "PM", "AI", "AF"],
+                    "description": "Which stage(s) to simulate. 'all' runs full cascade.",
+                    "default": "all",
+                },
+                "pm_budget": {
+                    "type": "integer",
+                    "description": "Number of ads surviving PM truncation.",
+                    "default": 500,
+                },
+                "ai_budget": {
+                    "type": "integer",
+                    "description": "Number of ads surviving AI stage.",
+                    "default": 100,
+                },
+                "af_budget": {
+                    "type": "integer",
+                    "description": "Number of ads surviving AF stage.",
+                    "default": 20,
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "hsnn_cluster_scorer",
+        "description": (
+            "Simulate HSNN 2-level hierarchical cluster scoring for sublinear retrieval. "
+            "Clusters ads into coarse groups, scores centroids, expands only top-K clusters, "
+            "then sub-clusters for fine scoring. Reports computational savings."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "n_coarse": {
+                    "type": "integer",
+                    "description": "Number of coarse clusters.",
+                    "default": 10,
+                },
+                "n_fine_per_coarse": {
+                    "type": "integer",
+                    "description": "Number of fine sub-clusters per expanded coarse cluster.",
+                    "default": 5,
+                },
+                "expand_top_k_coarse": {
+                    "type": "integer",
+                    "description": "Number of top coarse clusters to expand (rest pruned).",
+                    "default": 3,
+                },
+                "top_k": {
+                    "type": "integer",
+                    "description": "Number of top ads to return.",
+                    "default": 100,
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "ml_reducer",
+        "description": (
+            "Simulate ML-driven truncation (ML Reducer). Scores candidates by combined "
+            "signals and removes the bottom fraction. Compares against heuristic truncation. "
+            "Reports value preservation and positive survival."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "candidate_ad_ids": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "Ad IDs to reduce. If omitted, uses all ads.",
+                    "nullable": True,
+                },
+                "target_stage": {
+                    "type": "string",
+                    "enum": ["PM", "AI"],
+                    "description": "Which stage this reduction simulates.",
+                    "default": "PM",
+                },
+                "reduction_rate": {
+                    "type": "number",
+                    "description": "Fraction of ads to remove (0.5 = remove bottom 50%).",
+                    "default": 0.5,
+                },
+                "method": {
+                    "type": "string",
+                    "enum": ["ml_value", "heuristic_cosine", "heuristic_random"],
+                    "description": "Scoring method for truncation.",
+                    "default": "ml_value",
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "parallel_routes_blender",
+        "description": (
+            "Blend candidates from multiple retrieval routes (PRM + ML Blender). "
+            "Supports RRF, learned ML blending, or priority-based allocation. "
+            "Reports per-route contribution and overlap analysis."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "route_results": {
+                    "type": "object",
+                    "description": (
+                        "Dict of route_name -> ordered list of ad_ids. "
+                        "E.g. {'embedding_search': [id1, id2], 'fr_centroid': [id3, id4]}"
+                    ),
+                },
+                "blending_strategy": {
+                    "type": "string",
+                    "enum": ["rrf", "ml_blender", "priority"],
+                    "description": "Blending strategy.",
+                    "default": "rrf",
+                },
+                "target_pool_size": {
+                    "type": "integer",
+                    "description": "Target number of blended candidates.",
+                    "default": 200,
+                },
+                "main_route_weight": {
+                    "type": "number",
+                    "description": "Weight for main route in priority mode.",
+                    "default": 0.6,
+                },
+            },
+            "required": ["route_results"],
+        },
+    },
 ]
 
 
@@ -372,6 +519,58 @@ def execute_tool(tool_name: str, args: Dict[str, Any], request_data: Dict[str, A
             user_emb=user_emb,
             lambda_param=args.get("lambda_param", 0.7),
             top_k=args.get("top_k", 100),
+        )
+
+    elif tool_name == "pipeline_simulator":
+        return pipeline_simulator(
+            user_emb=user_emb,
+            ad_embs=ad_embs,
+            ad_ids=ad_ids,
+            labels=labels,
+            stage=args.get("stage", "all"),
+            pm_budget=args.get("pm_budget", 500),
+            ai_budget=args.get("ai_budget", 100),
+            af_budget=args.get("af_budget", 20),
+            prod_data_dir=request_data.get("prod_data_dir", "data_enriched"),
+            request_id=request_data.get("request_id"),
+        )
+
+    elif tool_name == "hsnn_cluster_scorer":
+        return hsnn_cluster_scorer(
+            user_emb=user_emb,
+            ad_embs=ad_embs,
+            ad_ids=ad_ids,
+            labels=labels,
+            n_coarse=args.get("n_coarse", 10),
+            n_fine_per_coarse=args.get("n_fine_per_coarse", 5),
+            expand_top_k_coarse=args.get("expand_top_k_coarse", 3),
+            top_k=args.get("top_k", 100),
+        )
+
+    elif tool_name == "ml_reducer":
+        return ml_reducer(
+            user_emb=user_emb,
+            ad_embs=ad_embs,
+            ad_ids=ad_ids,
+            labels=labels,
+            candidate_ad_ids=args.get("candidate_ad_ids"),
+            target_stage=args.get("target_stage", "PM"),
+            reduction_rate=args.get("reduction_rate", 0.5),
+            method=args.get("method", "ml_value"),
+            prod_data_dir=request_data.get("prod_data_dir", "data_enriched"),
+            request_id=request_data.get("request_id"),
+        )
+
+    elif tool_name == "parallel_routes_blender":
+        return parallel_routes_blender(
+            user_emb=user_emb,
+            ad_embs=ad_embs,
+            ad_ids=ad_ids,
+            labels=labels,
+            route_results=args["route_results"],
+            blending_strategy=args.get("blending_strategy", "rrf"),
+            target_pool_size=args.get("target_pool_size", 200),
+            main_route_weight=args.get("main_route_weight", 0.6),
         )
 
     else:
