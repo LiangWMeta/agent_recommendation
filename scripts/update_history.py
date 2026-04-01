@@ -134,7 +134,7 @@ def main():
         raw = output_data.get("raw_response", "")
         # Simple heuristic: look for tool names in the response
         tool_names = [
-            "embedding_similarity_search", "feature_filter", "cluster_explorer",
+            "pselect_main_route", "feature_filter", "cluster_explorer",
             "similar_ads_lookup", "engagement_pattern_analyzer", "ads_pool_stats",
             "lookup_similar_requests",
         ]

@@ -162,7 +162,7 @@ Per-ad and per-user context are maintained separately — see `architecture.md` 
 
 ## Leakage Prevention Rules
 
-**Critical**: Several tools (FR centroid, anti-negative scorer, cluster engagement) use engagement labels that are also the evaluation target. Without proper controls, this inflates results by 30-50%.
+**Critical**: Several tools (Forced Retrieval, anti-negative scorer, cluster engagement) use engagement labels that are also the evaluation target. Without proper controls, this inflates results by 30-50%.
 
 ### Rules:
 1. **Tools see `history_labels`** — 50% of positive labels, simulating past clicks
@@ -193,5 +193,5 @@ grep -r "test_labels" tools/  # should return nothing
 | `pipeline_simulator` | — | history_labels | `data/local/model/enriched` |
 | `ml_reducer` | — | history_labels | `data/local/model/enriched` |
 | `hsnn_cluster_scorer` | — | history_labels | — |
-| `fr_centroid_search` | — | history_labels | — |
+| `forced_retrieval` | — | history_labels | — |
 | `anti_negative_scorer` | — | history_labels | — |

@@ -24,8 +24,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from tools.embedding_search import embedding_similarity_search
-from tools.fr_centroid_search import fr_centroid_search
+from tools.pselect_main_route import pselect_main_route
+from tools.forced_retrieval import forced_retrieval
 from tools.anti_negative_scorer import anti_negative_scorer
 from tools.cluster_explorer import cluster_explorer
 from tools.engagement_analyzer import engagement_pattern_analyzer
@@ -58,8 +58,8 @@ def precompute_and_write(rd, output_dir):
     request_id = rd["request_id"]
 
     ea = engagement_pattern_analyzer(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"])
-    fr = fr_centroid_search(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=150)
-    emb = embedding_similarity_search(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=150)
+    fr = forced_retrieval(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=150)
+    emb = pselect_main_route(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=150)
     cl = cluster_explorer(rd["ad_embs"], rd["ad_ids"], n_clusters=5, top_k_per_cluster=30, labels=rd["labels"])
     an = anti_negative_scorer(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], alpha=0.3, top_k=100)
     pm = prod_model_ranker(rd["ad_ids"], top_k=100, request_id=request_id)

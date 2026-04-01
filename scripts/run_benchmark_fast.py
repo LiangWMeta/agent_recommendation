@@ -26,8 +26,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from tools.embedding_search import embedding_similarity_search
-from tools.fr_centroid_search import fr_centroid_search
+from tools.pselect_main_route import pselect_main_route
+from tools.forced_retrieval import forced_retrieval
 from tools.anti_negative_scorer import anti_negative_scorer
 from tools.cluster_explorer import cluster_explorer
 from tools.engagement_analyzer import engagement_pattern_analyzer
@@ -64,12 +64,12 @@ def precompute_tool_results(request_data):
     )
 
     # 3. FR centroid search
-    results["fr_centroid_search"] = fr_centroid_search(
+    results["forced_retrieval"] = forced_retrieval(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=150
     )
 
     # 4. Embedding similarity search
-    results["embedding_similarity_search"] = embedding_similarity_search(
+    results["pselect_main_route"] = pselect_main_route(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=150
     )
 
@@ -117,9 +117,9 @@ def format_tool_results(results):
 - Engagement by cluster: {json.dumps(ea.get('engagement_by_cluster', []), default=str)}""")
 
     # FR centroid search
-    fr = results["fr_centroid_search"]
+    fr = results["forced_retrieval"]
     fr_results = fr.get("results", [])
-    sections.append(f"""## fr_centroid_search (top_k=150)
+    sections.append(f"""## forced_retrieval (top_k=150)
 - centroid_gap: {fr.get('centroid_gap', 0):.6f}
 - user_emb_gap: {fr.get('user_emb_gap', 0):.6f}
 - centroid_vs_user_correlation: {fr.get('centroid_vs_user_correlation', 0):.4f}
@@ -128,9 +128,9 @@ def format_tool_results(results):
 - Full result ad_ids ({len(fr_results)} total): {[r['ad_id'] for r in fr_results]}""")
 
     # Embedding similarity search
-    es = results["embedding_similarity_search"]
+    es = results["pselect_main_route"]
     es_results = es.get("results", [])
-    sections.append(f"""## embedding_similarity_search (top_k=150)
+    sections.append(f"""## pselect_main_route (top_k=150)
 - score_range: {es.get('score_range', [])}
 - score_std: {es.get('score_std', 0):.6f}
 - top_bottom_gap: {es.get('top_bottom_gap', 0):.6f}

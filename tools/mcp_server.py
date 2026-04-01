@@ -18,14 +18,14 @@ from pathlib import Path
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from tools.embedding_search import embedding_similarity_search
+from tools.pselect_main_route import pselect_main_route
 from tools.feature_filter import feature_filter
 from tools.cluster_explorer import cluster_explorer
 from tools.similar_ads import similar_ads_lookup
 from tools.engagement_analyzer import engagement_pattern_analyzer
 from tools.pool_stats import ads_pool_stats
 from tools.history_lookup import lookup_similar_requests
-from tools.fr_centroid_search import fr_centroid_search
+from tools.forced_retrieval import forced_retrieval
 from tools.anti_negative_scorer import anti_negative_scorer
 from tools.mmr_reranker import mmr_reranker
 from tools.prod_model_ranker import prod_model_ranker
@@ -68,7 +68,7 @@ def handle_tools_list(msg_id):
     """Handle tools/list request."""
     tools = [
         {
-            "name": "embedding_similarity_search",
+            "name": "pselect_main_route",
             "description": "Search for ads similar to the user embedding by cosine similarity. Returns ranked list of (ad_id, score).",
             "inputSchema": {
                 "type": "object",
@@ -162,7 +162,7 @@ def handle_tools_list(msg_id):
             },
         },
         {
-            "name": "fr_centroid_search",
+            "name": "forced_retrieval",
             "description": "Simulates production Forced Retrieval by using the centroid of positively-engaged ad embeddings as a second query vector. Provides a completely independent query from user_emb.",
             "inputSchema": {
                 "type": "object",
@@ -272,8 +272,8 @@ def handle_tool_call(msg_id, tool_name, arguments):
     rd = REQUEST_DATA
 
     try:
-        if tool_name == "embedding_similarity_search":
-            result = embedding_similarity_search(
+        if tool_name == "pselect_main_route":
+            result = pselect_main_route(
                 rd["user_emb"], rd["ad_embs"], rd["ad_ids"],
                 top_k=arguments.get("top_k", 100),
                 threshold=arguments.get("threshold"),
@@ -316,8 +316,8 @@ def handle_tool_call(msg_id, tool_name, arguments):
                 positive_rate=arguments["positive_rate"],
                 n_candidates=arguments["n_candidates"],
             )
-        elif tool_name == "fr_centroid_search":
-            result = fr_centroid_search(
+        elif tool_name == "forced_retrieval":
+            result = forced_retrieval(
                 rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"],
                 top_k=arguments.get("top_k", 100),
             )

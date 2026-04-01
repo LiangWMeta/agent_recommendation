@@ -36,8 +36,8 @@ Assembled per request. Tells you who the user is and what they want.
 
 | Tool | Stage | Purpose | When to Use |
 |------|-------|---------|-------------|
-| `embedding_similarity_search` | AP/PM | Cosine search by user embedding (Main Route) | Strong signal — primary retrieval |
-| `fr_centroid_search` | AP | Search by centroid of engaged ads (Forced Retrieval) | ALWAYS — independent route |
+| `pselect_main_route` | AP/PM | Cosine search by user embedding (Main Route) | Strong signal — primary retrieval |
+| `forced_retrieval` | AP | Search by centroid of engaged ads (Forced Retrieval) | ALWAYS — independent route |
 | `prod_model_ranker` | PM | Production model calibrated CTR (SlimDSNN) | When available — strongest quality signal |
 | `hsnn_cluster_scorer` | AP/PM | 2-level hierarchical cluster scoring (HSNN) | ALWAYS — sublinear exploration of ad space |
 | `pipeline_simulator` | All | Full cascade simulation (AP→PM→AI→AF) | E2E reasoning — understand stage survival |
@@ -66,7 +66,7 @@ Assembled per request. Tells you who the user is and what they want.
 
 ### Production-first approach:
 1. Start with `engagement_pattern_analyzer` to assess signal quality
-2. Run production track routes: `fr_centroid_search`, `embedding_similarity_search` (if signal strong), `hsnn_cluster_scorer`, `prod_model_ranker`
+2. Run production track routes: `forced_retrieval`, `pselect_main_route` (if signal strong), `hsnn_cluster_scorer`, `prod_model_ranker`
 3. Blend with `parallel_routes_blender` to combine route outputs
 4. Simulate pipeline with `pipeline_simulator` to understand stage survival
 5. Apply `ml_reducer` to identify ads that survive truncation

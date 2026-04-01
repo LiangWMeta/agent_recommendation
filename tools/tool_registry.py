@@ -1,13 +1,13 @@
 from typing import Dict, Any, List
 
-from tools.embedding_search import embedding_similarity_search
+from tools.pselect_main_route import pselect_main_route
 from tools.feature_filter import feature_filter
 from tools.cluster_explorer import cluster_explorer
 from tools.similar_ads import similar_ads_lookup
 from tools.engagement_analyzer import engagement_pattern_analyzer
 from tools.pool_stats import ads_pool_stats
 from tools.history_lookup import lookup_similar_requests
-from tools.fr_centroid_search import fr_centroid_search
+from tools.forced_retrieval import forced_retrieval
 from tools.anti_negative_scorer import anti_negative_scorer
 from tools.mmr_reranker import mmr_reranker
 from tools.pipeline_simulator import pipeline_simulator
@@ -18,7 +18,7 @@ from tools.parallel_routes_blender import parallel_routes_blender
 
 TOOLS: List[Dict[str, Any]] = [
     {
-        "name": "embedding_similarity_search",
+        "name": "pselect_main_route",
         "description": (
             "Search ads by cosine similarity to the user embedding. "
             "Returns the top-K most similar ads sorted by score."
@@ -195,7 +195,7 @@ TOOLS: List[Dict[str, Any]] = [
         },
     },
     {
-        "name": "fr_centroid_search",
+        "name": "forced_retrieval",
         "description": (
             "Simulates production Forced Retrieval by using the centroid of "
             "positively-engaged ad embeddings as a second query vector. "
@@ -426,8 +426,8 @@ def execute_tool(tool_name: str, args: Dict[str, Any], request_data: Dict[str, A
     ad_ids = request_data["ad_ids"]
     labels = request_data["labels"]
 
-    if tool_name == "embedding_similarity_search":
-        return embedding_similarity_search(
+    if tool_name == "pselect_main_route":
+        return pselect_main_route(
             user_emb=user_emb,
             ad_embs=ad_embs,
             ad_ids=ad_ids,
@@ -492,8 +492,8 @@ def execute_tool(tool_name: str, args: Dict[str, Any], request_data: Dict[str, A
             n_candidates=args["n_candidates"],
         )
 
-    elif tool_name == "fr_centroid_search":
-        return fr_centroid_search(
+    elif tool_name == "forced_retrieval":
+        return forced_retrieval(
             user_emb=user_emb,
             ad_embs=ad_embs,
             ad_ids=ad_ids,

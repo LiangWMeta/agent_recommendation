@@ -105,8 +105,8 @@ Tools that directly simulate production retrieval components. These form the cor
 
 | Tool | Production Analog | Stage | Description |
 |------|-------------------|-------|-------------|
-| `embedding_similarity_search` | Main Route (TTSN PM / PSelect) | AP/PM | Cosine similarity between user and ad embeddings in 32d PSelect space |
-| `fr_centroid_search` | Forced Retrieval (85% of impressions) | AP | Uses centroid of positively-engaged ads as independent query vector |
+| `pselect_main_route` | Main Route (TTSN PM / PSelect) | AP/PM | Cosine similarity between user and ad embeddings in 32d PSelect space |
+| `forced_retrieval` | Forced Retrieval (85% of impressions) | AP | Uses centroid of positively-engaged ads as independent query vector |
 | `prod_model_ranker` | SlimDSNN PM scoring | PM | Production model calibrated CTR prediction — strongest per-ad quality signal |
 | `hsnn_cluster_scorer` | HSNN (88% AP, 36% PM adoption) | AP/PM | 2-level hierarchical cluster scoring for sublinear-cost retrieval |
 | `pipeline_simulator` | Cascaded pipeline (AP→PM→AI→AF) | All | Full cascade simulation with per-stage survival and cross-stage consistency |

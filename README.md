@@ -40,7 +40,7 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 └──────┬──────────────────────────────────────────────┬───────────┘
        ▼                                              ▼
   PRODUCTION TRACK (7 tools)          EXPLORATION TRACK (5 tools)
-  embedding_search, fr_centroid,      anti_negative, cluster_explorer,
+  pselect_main_route, forced_retrieval,      anti_negative, cluster_explorer,
   hsnn_cluster, prod_model,           similar_ads, mmr_reranker,
   pipeline_simulator, ml_reducer,     feature_filter
   parallel_routes_blender
@@ -62,7 +62,7 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 |---------|---------|-------------|
 | PM truncation is #1 bottleneck | 72.6% of positives lost | Improve PM scoring or widen budget |
 | ML Reducer > Heuristic | +6.8% positive preservation | Validates ML Reducer investment |
-| FR Centroid irreplaceable | 13.7 unique positives, 12% overlap | Must remain as dedicated PRM route |
+| Forced Retrieval irreplaceable | 13.7 unique positives, 12% overlap | Must remain as dedicated PRM route |
 | HSNN sweet spot at k=3 | 73% compute savings, near-peak recall | Expanding beyond 5 has diminishing returns |
 | Production routes dominate | Exploration adds <0.1% recall | Exploration value is in diversity, not recall |
 | Full pipeline survival | Only 0.5% of positives reach AF | Cross-stage consistency is critical |
@@ -118,7 +118,7 @@ agent_recommendation/
 
 1. **PM truncation is the #1 bottleneck** — 72.6% of positive ads lost at PM. Improving PM scoring or ML Reducer has highest impact.
 2. **ML Reducer > Heuristic** — +6.8% more positives preserved at 50% reduction.
-3. **FR Centroid is irreplaceable** — 13.7 unique positives per request at 12% overlap with other routes.
+3. **Forced Retrieval is irreplaceable** — 13.7 unique positives per request at 12% overlap with other routes.
 4. **HSNN sweet spot at k=3** — 73% compute savings at near-peak recall.
 5. **Production routes dominate** — Exploration routes add <0.1% recall.
 6. **Data leakage inflates by 30-50%** — Train/test split essential.

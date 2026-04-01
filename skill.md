@@ -5,8 +5,8 @@
 ### Production Track
 | Tool | What it does | Stage | When to use |
 |------|-------------|-------|-------------|
-| `embedding_similarity_search` | Cosine search by user embedding | AP/PM | Strong signal only |
-| `fr_centroid_search` | Search by centroid of engaged ads (FR-like) | AP | ALWAYS — independent route |
+| `pselect_main_route` | Cosine search by user embedding | AP/PM | Strong signal only |
+| `forced_retrieval` | Search by centroid of engaged ads (FR-like) | AP | ALWAYS — independent route |
 | `prod_model_ranker` | Rank by production model prediction (calibrated CTR) | PM | When available |
 | `hsnn_cluster_scorer` | Hierarchical 2-level cluster scoring (HSNN) | AP/PM | ALWAYS — sublinear exploration |
 | `pipeline_simulator` | Simulate cascaded pipeline (AP→PM→AI→AF) | All | E2E reasoning |
@@ -47,11 +47,11 @@ This context informs every downstream decision: which routes to prioritize, how 
 Call `engagement_pattern_analyzer`. Key diagnostics:
 - **`similarity_gap`**: pos_mean - neg_mean. If < 0.01, user embedding is non-discriminative.
 - **`overlap_fraction`**: fraction of negatives scoring above avg positive. If > 0.7, embedding is useless.
-- **`centroid_gap`** (from `fr_centroid_search`): the centroid route may have stronger signal even when user_emb is weak.
+- **`centroid_gap`** (from `forced_retrieval`): the centroid route may have stronger signal even when user_emb is weak.
 
 ### Step 2: Check History + FR Centroid
 
-Call `lookup_similar_requests` and `fr_centroid_search` in parallel:
+Call `lookup_similar_requests` and `forced_retrieval` in parallel:
 - History tells you what worked for similar requests
 - FR centroid provides a completely independent retrieval route (0-6% overlap with user_emb)
 - **FR centroid is ALWAYS valuable** — it retrieves different candidates regardless of signal quality
@@ -59,21 +59,21 @@ Call `lookup_similar_requests` and `fr_centroid_search` in parallel:
 ### Step 3: Multi-Route Retrieval (choose based on signal quality)
 
 **Strong Signal** (similarity_gap > 0.05):
-1. `embedding_similarity_search(top_k=150)` — primary
-2. `fr_centroid_search(top_k=100)` — independent second route
+1. `pselect_main_route(top_k=150)` — primary
+2. `forced_retrieval(top_k=100)` — independent second route
 3. `hsnn_cluster_scorer(expand_top_k_coarse=3)` — hierarchical exploration
 4. `prod_model_ranker(top_k=50)` — production model signal (if available)
 5. Blend via `parallel_routes_blender`
 
 **Weak Signal** (similarity_gap < 0.01):
-1. `fr_centroid_search(top_k=150)` — PRIMARY route
+1. `forced_retrieval(top_k=150)` — PRIMARY route
 2. `hsnn_cluster_scorer(expand_top_k_coarse=5)` — expand more clusters for exploration
 3. `prod_model_ranker(top_k=100)` — production model doesn't depend on user embedding
-4. DO NOT rely on `embedding_similarity_search` — it's random
+4. DO NOT rely on `pselect_main_route` — it's random
 5. Blend via `parallel_routes_blender`
 
 **Moderate Signal** (0.01 < similarity_gap < 0.05):
-1. `fr_centroid_search(top_k=100)` + `embedding_similarity_search(top_k=100)` — equal weight
+1. `forced_retrieval(top_k=100)` + `pselect_main_route(top_k=100)` — equal weight
 2. `hsnn_cluster_scorer(expand_top_k_coarse=3)` — hierarchical exploration
 3. `prod_model_ranker(top_k=50)` — if available
 4. Blend via `parallel_routes_blender`

@@ -2,7 +2,7 @@ import numpy as np
 from typing import Dict, Optional
 
 
-def embedding_similarity_search(
+def pselect_main_route(
     user_emb: np.ndarray,
     ad_embs: np.ndarray,
     ad_ids: np.ndarray,

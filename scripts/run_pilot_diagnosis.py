@@ -21,8 +21,8 @@ from tools.pipeline_simulator import pipeline_simulator
 from tools.hsnn_cluster_scorer import hsnn_cluster_scorer
 from tools.ml_reducer import ml_reducer
 from tools.parallel_routes_blender import parallel_routes_blender
-from tools.embedding_search import embedding_similarity_search
-from tools.fr_centroid_search import fr_centroid_search
+from tools.pselect_main_route import pselect_main_route
+from tools.forced_retrieval import forced_retrieval
 from tools.prod_model_ranker import prod_model_ranker
 from tools.anti_negative_scorer import anti_negative_scorer
 from tools.cluster_explorer import cluster_explorer
@@ -80,10 +80,10 @@ def run_q1(rd):
 # ---------------------------------------------------------------------------
 def run_q2(rd):
     """Run 4 production routes, blend them, and collect route statistics."""
-    emb_result = embedding_similarity_search(
+    emb_result = pselect_main_route(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=100,
     )
-    fr_result = fr_centroid_search(
+    fr_result = forced_retrieval(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=100,
     )
     hsnn_result = hsnn_cluster_scorer(
@@ -172,10 +172,10 @@ def run_q4(rd):
 def run_q5(rd):
     """Measure recall@100 as exploration routes are incrementally added."""
     # Production routes
-    emb_result = embedding_similarity_search(
+    emb_result = pselect_main_route(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=100,
     )
-    fr_result = fr_centroid_search(
+    fr_result = forced_retrieval(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=100,
     )
     hsnn_result = hsnn_cluster_scorer(

@@ -2,7 +2,7 @@ import numpy as np
 from typing import Dict
 
 
-def fr_centroid_search(
+def forced_retrieval(
     user_emb: np.ndarray,
     ad_embs: np.ndarray,
     ad_ids: np.ndarray,
