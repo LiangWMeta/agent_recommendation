@@ -2,68 +2,124 @@ import numpy as np
 import json
 from pathlib import Path
 from typing import Dict, Optional
+from sklearn.cluster import KMeans
 
 
 def prod_model_ranker(
     ad_ids: np.ndarray,
     top_k: int = 100,
+    mode: str = "rank_all",
     prod_data_dir: str = "data/local/model/enriched",
     request_id: Optional[int] = None,
+    scoring: str = "ecpm",
+    ad_embs: Optional[np.ndarray] = None,
+    user_emb: Optional[np.ndarray] = None,
+    n_coarse: int = 10,
+    expand_top_k_coarse: int = 3,
 ) -> Dict:
-    """Rank ads by production model prediction (calibrated CTR from SlimDSNN).
+    """Rank ads by production model scoring.
 
-    This is the strongest per-ad signal — the actual production PM model's
-    calibrated prediction of click-through rate. In production, this score
-    determines which ads survive PreMatch truncation.
+    Two modes:
+    - rank_all: Score every candidate by eCPM (pm_total_value) or pCTR.
+    - with_hsnn: Use HSNN hierarchy to select candidates at sublinear cost,
+      then score by eCPM. Reports compute savings.
+
+    Two scoring options:
+    - ecpm: Use pm_total_value (pCTR × pCVR × bid). Most realistic.
+    - ctr: Use prod_prediction (pCTR only). Fallback when eCPM unavailable.
 
     Args:
         ad_ids: Ad ID array, shape [N].
         top_k: Number of top ads to return.
-        prod_data_dir: Directory containing prod prediction sidecar files.
-        request_id: Request ID to load prod predictions for.
-
-    Returns:
-        Dict with ranked results and diagnostics.
+        mode: "rank_all" or "with_hsnn".
+        prod_data_dir: Directory with prod prediction sidecar files.
+        request_id: Request ID to load data for.
+        scoring: "ecpm" (pm_total_value) or "ctr" (prod_prediction).
+        ad_embs: Ad embeddings (required for with_hsnn mode).
+        user_emb: User embedding (required for with_hsnn mode).
+        n_coarse: HSNN coarse clusters (with_hsnn mode).
+        expand_top_k_coarse: HSNN clusters to expand (with_hsnn mode).
     """
-    # Load prod predictions from sidecar JSON
     prod_path = Path(prod_data_dir) / f"{request_id}_prod.json"
     if not prod_path.exists():
         return {
             "results": [],
-            "error": f"No prod prediction data at {prod_path}. Run extract_prod_predictions.py first.",
+            "error": f"No prod data at {prod_path}. Run extract_prod_predictions.py first.",
             "available": False,
         }
 
     with open(prod_path) as f:
         prod_data = json.load(f)
 
-    # Build ad_id -> prod_prediction mapping
-    pred_map = {int(entry["ad_id"]): float(entry["prod_prediction"])
-                for entry in prod_data if entry.get("prod_prediction") is not None}
+    # Build ad_id -> scores mapping
+    score_map = {}
+    ecpm_available = False
+    for entry in prod_data:
+        aid = int(entry.get("ad_id", 0))
+        if scoring == "ecpm" and entry.get("pm_total_value") is not None:
+            score_map[aid] = float(entry["pm_total_value"])
+            ecpm_available = True
+        elif entry.get("prod_prediction") is not None:
+            score_map[aid] = float(entry["prod_prediction"])
 
-    # Score all ads
+    # Determine actual scoring method used
+    actual_scoring = "ecpm" if ecpm_available and scoring == "ecpm" else "ctr"
+
+    # Determine which ads to score
+    if mode == "with_hsnn" and ad_embs is not None and user_emb is not None:
+        # HSNN: cluster, expand top-K coarse, only score those
+        n_ads = len(ad_ids)
+        k = min(n_coarse, n_ads)
+        km = KMeans(n_clusters=k, random_state=42, n_init=10)
+        cluster_ids = km.fit_predict(ad_embs)
+
+        # Score coarse centroids by cosine to user
+        user_unit = user_emb / (np.linalg.norm(user_emb) + 1e-10)
+        centroid_scores = km.cluster_centers_ @ user_unit / (
+            np.linalg.norm(km.cluster_centers_, axis=1) + 1e-10
+        )
+        top_clusters = set(np.argsort(centroid_scores)[-expand_top_k_coarse:])
+
+        # Only score ads in expanded clusters
+        candidate_mask = np.array([cluster_ids[i] in top_clusters for i in range(n_ads)])
+        candidate_ids = ad_ids[candidate_mask]
+        n_scored = int(candidate_mask.sum())
+        n_pruned = n_ads - n_scored
+        compute_savings = n_pruned / n_ads if n_ads > 0 else 0.0
+    else:
+        # rank_all: score every ad
+        candidate_ids = ad_ids
+        n_scored = len(ad_ids)
+        n_pruned = 0
+        compute_savings = 0.0
+
+    # Score candidates
     scored = []
     missing = 0
-    for aid in ad_ids:
+    for aid in candidate_ids:
         aid_int = int(aid)
-        if aid_int in pred_map:
-            scored.append((aid_int, pred_map[aid_int]))
+        if aid_int in score_map:
+            scored.append((aid_int, score_map[aid_int]))
         else:
             missing += 1
 
-    # Sort by prod_prediction descending
     scored.sort(key=lambda x: x[1], reverse=True)
     top_scored = scored[:top_k]
 
-    results = [{"ad_id": aid, "prod_prediction": score} for aid, score in top_scored]
+    results = [{"ad_id": aid, "score": score} for aid, score in top_scored]
 
     scores_arr = np.array([s for _, s in scored]) if scored else np.array([0.0])
 
     return {
         "results": results,
         "available": True,
-        "coverage": len(scored) / len(ad_ids) if len(ad_ids) > 0 else 0,
+        "mode": mode,
+        "scoring": actual_scoring,
+        "coverage": len(scored) / len(candidate_ids) if len(candidate_ids) > 0 else 0,
         "missing_ads": missing,
+        "n_scored": n_scored,
+        "n_pruned": n_pruned,
+        "compute_savings": compute_savings,
         "score_stats": {
             "mean": float(scores_arr.mean()),
             "std": float(scores_arr.std()),

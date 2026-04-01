@@ -33,6 +33,7 @@ from tools.pipeline_simulator import pipeline_simulator
 from tools.hsnn_cluster_scorer import hsnn_cluster_scorer
 from tools.ml_reducer import ml_reducer
 from tools.parallel_routes_blender import parallel_routes_blender
+from tools.fr_centroid_search import fr_centroid_search
 
 
 # Global request data (loaded once at startup)
@@ -320,6 +321,7 @@ def handle_tool_call(msg_id, tool_name, arguments):
             result = forced_retrieval(
                 rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"],
                 top_k=arguments.get("top_k", 100),
+                request_id=rd["request_id"],
             )
         elif tool_name == "anti_negative_scorer":
             result = anti_negative_scorer(
@@ -339,7 +341,11 @@ def handle_tool_call(msg_id, tool_name, arguments):
             result = prod_model_ranker(
                 rd["ad_ids"],
                 top_k=arguments.get("top_k", 100),
+                mode=arguments.get("mode", "rank_all"),
                 request_id=rd["request_id"],
+                scoring=arguments.get("scoring", "ecpm"),
+                ad_embs=rd["ad_embs"],
+                user_emb=rd["user_emb"],
             )
         elif tool_name == "pipeline_simulator":
             result = pipeline_simulator(

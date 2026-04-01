@@ -14,6 +14,7 @@ from tools.pipeline_simulator import pipeline_simulator
 from tools.hsnn_cluster_scorer import hsnn_cluster_scorer
 from tools.ml_reducer import ml_reducer
 from tools.parallel_routes_blender import parallel_routes_blender
+from tools.fr_centroid_search import fr_centroid_search
 
 
 TOOLS: List[Dict[str, Any]] = [
@@ -494,6 +495,17 @@ def execute_tool(tool_name: str, args: Dict[str, Any], request_data: Dict[str, A
 
     elif tool_name == "forced_retrieval":
         return forced_retrieval(
+            user_emb=user_emb,
+            ad_embs=ad_embs,
+            ad_ids=ad_ids,
+            labels=labels,
+            top_k=args.get("top_k", 100),
+            prod_data_dir=request_data.get("prod_data_dir", "data/local/model/enriched"),
+            request_id=request_data.get("request_id"),
+        )
+
+    elif tool_name == "fr_centroid_search":
+        return fr_centroid_search(
             user_emb=user_emb,
             ad_embs=ad_embs,
             ad_ids=ad_ids,

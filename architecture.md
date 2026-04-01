@@ -99,25 +99,44 @@ A **rich user profile** assembled per request. Provides the agent with semantic 
 
 All retrieval tools are organized into three tracks.
 
-### Production Retrieval Track
+### Production Track (three parallel flows + blender)
 
-Tools that directly simulate production retrieval components. These form the core e2e pipeline.
+The production retrieval system runs three parallel flows, then blends their outputs:
 
-| Tool | Production Analog | Stage | Description |
-|------|-------------------|-------|-------------|
-| `pselect_main_route` | Main Route (TTSN PM / PSelect) | AP/PM | Cosine similarity between user and ad embeddings in 32d PSelect space |
-| `forced_retrieval` | Forced Retrieval (85% of impressions) | AP | Uses centroid of positively-engaged ads as independent query vector |
-| `prod_model_ranker` | SlimDSNN PM scoring | PM | Production model calibrated CTR prediction — strongest per-ad quality signal |
-| `hsnn_cluster_scorer` | HSNN (88% AP, 36% PM adoption) | AP/PM | 2-level hierarchical cluster scoring for sublinear-cost retrieval |
-| `pipeline_simulator` | Cascaded pipeline (AP→PM→AI→AF) | All | Full cascade simulation with per-stage survival and cross-stage consistency |
-| `ml_reducer` | ML Reducer/Truncator | PM/AI | ML-driven truncation replacing heuristic bottom-X% removal |
-| `parallel_routes_blender` | PRM + ML Blender | PM | Multi-route blending with learned or fixed weights |
+```
+Flow 1: PSelect (ANN)          → top-K by embedding cosine
+Flow 2: Forced Retrieval       → FR-flagged ads, top-K by eCPM
+Flow 3: Main Flow              → ML Truncator → Prod Model (rank_all or HSNN)
+                                      ↓
+                               Blender → Final ranked list
+```
 
-**Key production concepts modeled:**
-- **HSNN**: Hierarchical Structured Neural Networks — clusters ads into hierarchy, scores cluster centroids first (sublinear cost), only expands promising clusters
-- **PRM**: Parallel Retrieval Models — multiple parallel routes with different optimization objectives, replacing heuristic sources like ForceRetrieval and related ads
-- **ML Blender**: Learned integration layer that determines optimal candidate mix from multiple routes
-- **ML Reducer**: ML-driven filtering that predicts which candidates are unlikely to survive downstream stages
+**Flow 1: PSelect**
+| Tool | Production Component | Description |
+|------|---------------------|-------------|
+| `pselect_main_route` | PSelect / TTSN Main Route | ANN retrieval via 32d two-tower embeddings |
+
+**Flow 2: Forced Retrieval**
+| Tool | Production Component | Description |
+|------|---------------------|-------------|
+| `forced_retrieval` | Forced Retrieval (85% of impressions) | Uses `is_forced_retrieval` flag from prod, ranked by eCPM. Falls back to centroid approximation when flags unavailable. |
+
+**Flow 3: Main Flow (ML Truncator → Prod Model)**
+| Tool | Production Component | Description |
+|------|---------------------|-------------|
+| `ml_reducer` | ML Truncator | Truncate full candidate pool to reduce candidates before heavy scoring |
+| `prod_model_ranker` | HSNN + SlimDSNN (eCPM scoring) | Score by eCPM (pCTR × pCVR × bid). Two modes: `rank_all` (score every candidate) or `with_hsnn` (hierarchical sublinear scoring) |
+
+**Aggregation**
+| Tool | Production Component | Description |
+|------|---------------------|-------------|
+| `parallel_routes_blender` | PRM + ML Blender | Blend outputs from all 3 flows |
+| `pipeline_simulator` | Cascaded pipeline | Simulate full AP→PM→AI→AF cascade |
+
+**Key concepts:**
+- **eCPM**: Production ranks by pCTR × pCVR × bid (`pm_total_value`), not CTR alone
+- **HSNN**: Model architecture for efficient scoring — clusters ads hierarchically, scores centroids first, expands only promising clusters. It's how the prod model runs efficiently, not a separate route.
+- **ML Blender**: Learned integration that determines optimal candidate mix from parallel flows
 
 ### Exploration Track
 
@@ -125,10 +144,12 @@ Experimental retrieval strategies not yet directly modeled in production. These 
 
 | Tool | What It Explores | Research Value |
 |------|------------------|----------------|
-| `anti_negative_scorer` | Directional scoring: push toward positive centroid, away from negative | Tests whether explicit negative signal improves recall beyond simple cosine |
-| `cluster_explorer` | Flat K-means clustering with per-cluster engagement rates | Baseline for HSNN comparison — measures value of flat vs hierarchical clustering |
+| `fr_centroid_search` | Centroid-based FR approximation (engagement centroid as query vector) | Baseline for comparing against prod-flagged FR |
+| `hsnn_cluster_scorer` | Standalone HSNN hierarchy study (without eCPM scoring) | Research into cluster structure and compute/recall tradeoffs |
+| `anti_negative_scorer` | Directional scoring: push toward positive centroid, away from negative | Tests whether explicit negative signal improves recall beyond cosine |
+| `cluster_explorer` | Flat K-means clustering with per-cluster engagement rates | Baseline for HSNN comparison |
 | `similar_ads_lookup` | Ad-to-ad cosine expansion from known good ads | Tests "more-like-this" expansion; candidate for PRM route design |
-| `mmr_reranker` | Maximal Marginal Relevance diversity re-ranking | Quantifies recall/diversity tradeoff; informs diversity mechanism design |
+| `mmr_reranker` | Maximal Marginal Relevance diversity re-ranking | Quantifies recall/diversity tradeoff |
 | `feature_filter` | Embedding-derived feature filtering (norms, means) | Tests whether embedding features carry signal beyond cosine similarity |
 
 ### Diagnostics Track

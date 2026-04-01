@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """
-Extract prod_prediction scores from Hive for our candidate ads.
+Extract production signals from Hive for our candidate ads.
 
-Queries gr_p_select_bulk_eval_input_table to get the production model's
-calibrated CTR prediction for each ad in our dataset.
+Queries gr_p_select_bulk_eval_input_table to get:
+- prod_prediction: calibrated CTR from SlimDSNN
+- pm_total_value: full PM eCPM score (pCTR × pCVR × bid)
+- ai_total_value: full AI eCPM score
+- is_forced_retrieval: FR flag
+- is_piggyback: piggyback flag
 
 Usage:
     python3 scripts/extract_prod_predictions.py --max-requests 10
@@ -87,7 +91,11 @@ def extract_for_request(request_id, ad_ids):
         id_str = ", ".join(str(x) for x in batch)
 
         query = (
-            f"SELECT ad_id, prod_prediction "
+            f"SELECT ad_id, prod_prediction, "
+            f"float_features[5166] AS pm_total_value, "
+            f"float_features[3281] AS ai_total_value, "
+            f"(float_features[6318] = 1) AS is_forced_retrieval, "
+            f"(float_features[6278] = 1) AS is_piggyback "
             f"FROM {TABLE} "
             f"WHERE ds = '{DS}' "
             f"AND ad_id IN ({id_str})"
@@ -97,9 +105,17 @@ def extract_for_request(request_id, ad_ids):
         if rows:
             for row in rows:
                 aid = int(row["ad_id"])
-                pred = row.get("prod_prediction")
-                if pred is not None:
-                    all_results[aid] = float(pred)
+                entry = {}
+                if row.get("prod_prediction") is not None:
+                    entry["prod_prediction"] = float(row["prod_prediction"])
+                if row.get("pm_total_value") is not None:
+                    entry["pm_total_value"] = float(row["pm_total_value"])
+                if row.get("ai_total_value") is not None:
+                    entry["ai_total_value"] = float(row["ai_total_value"])
+                entry["is_forced_retrieval"] = bool(row.get("is_forced_retrieval", False))
+                entry["is_piggyback"] = bool(row.get("is_piggyback", False))
+                if entry:
+                    all_results[aid] = entry
 
         time.sleep(0.5)  # Rate limiting
 
@@ -142,9 +158,13 @@ def main():
 
         predictions = extract_for_request(request_id, ad_ids)
 
-        # Save as JSON
-        result = [{"ad_id": int(aid), "prod_prediction": predictions.get(int(aid))}
-                  for aid in ad_ids]
+        # Save as JSON — each entry has ad_id + all available signals
+        result = []
+        for aid in ad_ids:
+            entry = {"ad_id": int(aid)}
+            signals = predictions.get(int(aid), {})
+            entry.update(signals)
+            result.append(entry)
 
         with open(out_path, "w") as f:
             json.dump(result, f)
