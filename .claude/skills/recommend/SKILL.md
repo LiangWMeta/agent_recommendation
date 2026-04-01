@@ -5,7 +5,7 @@ description: Run agent recommendation on a batch of ad requests via MCP retrieva
 
 # Agent Recommendation
 
-Run the ads recommendation agent on a batch of requests. For each request, load context, start the MCP tool server, call retrieval tools following the adaptive strategy, and output ranked ad lists.
+Run the ads recommendation agent on a batch of requests. Pre-computes all tool results in Python (fast), then spawns parallel Agent subagents to reason over results and produce ranked ad lists.
 
 ## Arguments
 
@@ -16,77 +16,118 @@ Run the ads recommendation agent on a batch of requests. For each request, load 
 
 ## Workflow
 
-### 1. Setup
+### 1. Pre-compute tool results
+
+Run the precompute script to call all retrieval tools via Python (no LLM needed, ~3s/request):
 
 ```bash
-# Find available requests
-ls {data_dir}/*.npz | head -{N}
+python3 scripts/precompute_tool_results.py \
+  --data-dir {data_dir} \
+  --output-dir /tmp/tool_results \
+  --max-requests {N}
 ```
+
+This produces `/tmp/tool_results/{request_id}.md` for each request and a `manifest.json`.
+
+### 2. Setup output directory
 
 Set `run_id` to the provided value or generate one: `run_$(date +%Y%m%d_%H%M%S)`.
-Create output directory: `outputs/{run_id}/`.
-
-### 2. For each request
-
-#### a. Load context
-Read these files to understand the landscape and user:
-- `ads_pool/pool_overview.md` — pool size, categories, recent changes
-- `ads_pool/semantic_clusters.md` — HSNN cluster labels (if exists)
-- `user/{request_id}/profile.md` — user demographics, embedding summary
-- `user/{request_id}/interests.md` — stable interest clusters
-- `user/{request_id}/engagement.md` — engagement history
-- `user/{request_id}/context.md` — request context
-
-If user context files don't exist, note it and proceed with tool-based analysis only.
-
-#### b. Start MCP server and call tools
-The MCP server is at `tools/mcp_server.py`. For each request:
 
 ```bash
-python3 tools/mcp_server.py --request-npz {data_dir}/request_{request_id}.npz
+mkdir -p outputs/{run_id}
 ```
 
-Alternatively, for batch efficiency, use the benchmark script directly:
-```bash
-python3 scripts/run_baseline_weighted.py --run-id {run_id} --data-dir {data_dir} --max-requests {N}
+### 3. Read manifest
+
+Read `/tmp/tool_results/manifest.json` to get the list of request_ids to process.
+
+### 4. Spawn agents in waves
+
+For each wave of up to 5 requests, spawn Agent subagents **in parallel** using `run_in_background: true`. Send all agents in a single message to maximize parallelism.
+
+**Agent prompt for each request:**
+
 ```
+You are an ads recommendation agent. Your job is to reason about retrieval tool results and produce a ranked list of ad IDs.
 
-#### c. Follow skill.md reasoning
-1. **Step 0**: Load context (already done above)
-2. **Step 1**: Call `engagement_pattern_analyzer` — assess signal quality (similarity_gap)
-3. **Step 2**: Call `fr_centroid_search` + `lookup_similar_requests`
-4. **Step 3**: Multi-route retrieval based on signal quality:
-   - Strong (gap > 0.05): embedding primary + fr_centroid + hsnn + prod_model
-   - Moderate (0.01-0.05): balanced blend
-   - Weak (< 0.01): fr_centroid primary + hsnn expanded + prod_model
-5. **Step 4**: Blend with `parallel_routes_blender`, reduce with `ml_reducer`, simulate with `pipeline_simulator`
-6. **Step 5**: Output ranked_ads JSON
+Read the pre-computed tool results at /tmp/tool_results/{request_id}.md.
+Also read user context if available at user/{request_id}/ (profile.md, engagement.md, interest_clusters.md, context.md).
 
-#### d. Save output
-Write to `outputs/{run_id}/{request_id}.json`:
+Follow this reasoning framework:
+1. Check similarity_gap from engagement_pattern_analyzer:
+   - > 0.05: Strong signal — trust pselect_main_route as primary
+   - 0.01-0.05: Moderate — blend pselect and forced_retrieval equally
+   - < 0.01: Weak — forced_retrieval is primary, don't trust pselect
+
+2. Assess route reliability:
+   - forced_retrieval centroid_gap vs user_emb_gap — which query vector is stronger?
+   - centroid_vs_user_correlation — low means independent signals (good for diversity)
+
+3. Look for consensus ads appearing in multiple routes (high confidence).
+
+4. Check cluster patterns:
+   - High engagement_rate clusters deserve more candidates
+   - If a cluster has high engagement but low route coverage, those ads are being missed
+
+5. Check prod_model_ranker if available — strongest per-ad quality signal.
+
+6. Merge all route results. Prioritize:
+   - Consensus ads (4+ routes) first
+   - Forced retrieval unique finds (historically most valuable)
+   - High-engagement cluster ads
+   - Prod model top ads
+   - PSelect/anti-negative ads to fill
+
+Write your output as a JSON file at outputs/{run_id}/{request_id}.json:
 ```json
 {
-  "request_id": 1005207739,
+  "request_id": {request_id},
   "ranked_ads": [ad_id_1, ad_id_2, ...],
-  "strategy": "Description of strategy used"
+  "strategy": "Brief description of your reasoning"
 }
 ```
 
-Also write `outputs/{run_id}/meta.json` with run metadata:
+Include 150+ ranked ad IDs. The ranking should reflect your best judgment of engagement likelihood.
+```
+
+**Important agent settings:**
+- `run_in_background: true` — allows parallel execution
+- `mode: "auto"` — agents can read files and write output without prompts
+
+### 5. Wait for agents and collect results
+
+After each wave completes (you'll be notified), check that output files were written:
+```bash
+ls outputs/{run_id}/*.json | wc -l
+```
+
+Then spawn the next wave. Continue until all requests are processed.
+
+### 6. Write metadata
+
+After all requests complete, write `outputs/{run_id}/meta.json`:
 ```json
 {
-  "run_id": "run_20260331_214500",
-  "data_dir": "data/local/model/split",
-  "n_requests": 20,
-  "request_ids": [1005207739, 1017453312, ...],
-  "timestamp": "2026-03-31T21:45:00"
+  "run_id": "{run_id}",
+  "data_dir": "{data_dir}",
+  "n_requests": N,
+  "request_ids": [...],
+  "timestamp": "..."
 }
 ```
 
-### 3. Summary
+### 7. Summary
 
-After all requests, print:
+Print:
 - Requests processed: N
 - Run ID: `{run_id}`
 - Output directory: `outputs/{run_id}/`
 - Suggest: "Run `/analyze --run-id {run_id}` to evaluate results"
+
+## Single Request Mode
+
+For `--request ID`, skip pre-compute and directly:
+1. Read user context from `user/{request_id}/`
+2. Start MCP server: `python3 tools/mcp_server.py --request-npz {data_dir}/request_{id}.npz`
+3. Call tools interactively following skill.md reasoning
+4. Output ranked_ads JSON
