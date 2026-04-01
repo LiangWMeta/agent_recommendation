@@ -56,28 +56,41 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 
 **Production pipeline simulated**: AP (190K) → PM (11K) → AI (709) → AF (84)
 
-## Tools (15 total)
+## Tools (16 total)
 
-### Production Track
+### Production Track (three parallel flows + blender)
 
-| Tool | Production Component | Stage |
-|------|---------------------|-------|
-| `pselect_main_route` | PSelect / TTSN Main Route (primary ANN retrieval) | AP/PM |
-| `forced_retrieval` | Forced Retrieval (85% of impressions, independent route) | AP |
-| `prod_model_ranker` | SlimDSNN PM (calibrated CTR prediction) | PM |
-| `hsnn_cluster_scorer` | HSNN (hierarchical cluster scoring, sublinear cost) | AP/PM |
-| `pipeline_simulator` | Cascaded pipeline (AP→PM→AI→AF simulation) | All |
-| `ml_reducer` | ML Reducer/Truncator (replaces heuristic truncation) | PM/AI |
-| `parallel_routes_blender` | PRM + ML Blender (multi-route integration) | PM |
+```
+Flow 1: PSelect (ANN) ─────────────────────┐
+Flow 2: Forced Retrieval (flagged, eCPM) ──┤→ Blender → Final
+Flow 3: ML Truncator → Prod Model ────────┘
+         (rank_all or with_hsnn, eCPM)
+```
+
+**Flow 1: PSelect**
+| `pselect_main_route` | PSelect / TTSN Main Route (ANN retrieval) | AP |
+
+**Flow 2: Forced Retrieval**
+| `forced_retrieval` | FR-flagged ads ranked by eCPM (centroid fallback) | AP |
+
+**Flow 3: Main Flow**
+| `ml_reducer` | ML Truncator (reduce candidates before heavy scoring) | PM |
+| `prod_model_ranker` | eCPM scoring: rank_all or with_hsnn mode | PM |
+
+**Aggregation**
+| `parallel_routes_blender` | Blend all 3 flows | PM |
+| `pipeline_simulator` | Simulate AP→PM→AI→AF cascade | All |
 
 ### Exploration Track
 
 | Tool | Purpose |
 |------|---------|
-| `anti_negative_scorer` | Directional scoring: toward positive, away from negative centroids |
-| `cluster_explorer` | Flat K-means clustering (HSNN baseline) |
+| `fr_centroid_search` | Centroid-based FR approximation (research baseline) |
+| `hsnn_cluster_scorer` | Standalone HSNN hierarchy study |
+| `anti_negative_scorer` | Directional scoring toward/away from centroids |
+| `cluster_explorer` | Flat K-means clustering |
 | `similar_ads_lookup` | Ad-to-ad expansion from engaged ads |
-| `mmr_reranker` | Maximal Marginal Relevance diversity re-ranking |
+| `mmr_reranker` | MMR diversity re-ranking |
 | `feature_filter` | Embedding feature filtering |
 
 ### Diagnostics: `engagement_pattern_analyzer`, `ads_pool_stats`, `lookup_similar_requests`
@@ -86,13 +99,13 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 
 ### Agent Performance
 
-| Metric | Agent (Claude) | RRF (fixed-weight) | Baseline (cosine) | vs Baseline |
-|--------|---------------|--------------------|--------------------|-------------|
-| Recall@50 | 10.09% | 8.89% | 7.13% | **+41%** |
-| Recall@100 | **18.29%** | 16.36% | 12.85% | **+42%** |
-| NDCG@100 | 36.81% | 33.11% | — | — |
-
-Claude's adaptive reasoning adds **+1.93%** recall@100 over fixed-weight RRF.
+| Metric | Agent (v2, Haiku) | Baseline (cosine) | Delta | Improvement |
+|--------|------------------|-------------------|-------|-------------|
+| Recall@10 | 2.19% | 1.77% | +0.42% | +24% |
+| Recall@20 | 3.78% | 3.30% | +0.48% | +15% |
+| Recall@50 | 8.86% | 7.13% | +1.73% | +24% |
+| **Recall@100** | **16.41%** | **12.85%** | **+3.56%** | **+28%** |
+| NDCG@100 | 33.83% | — | — | — |
 
 ### Pipeline Diagnosis (100 requests)
 
@@ -100,9 +113,10 @@ Claude's adaptive reasoning adds **+1.93%** recall@100 over fixed-weight RRF.
 |---------|---------|-------------|
 | PM truncation is #1 bottleneck | 54.1% of positives lost | Improve PM scoring or widen budget |
 | ML Reducer > Heuristic | **+9.4%** positive preservation | Validates ML Reducer investment |
-| Forced Retrieval irreplaceable | 14.2 unique positives, 7% overlap | Must remain as dedicated PRM route |
+| Forced Retrieval irreplaceable | 14.2 unique positives, 7% overlap | Must remain as dedicated route |
 | HSNN sweet spot at k=3 | 71% compute savings, near-peak recall | Expanding beyond 5 has diminishing returns |
 | Exploration routes add value | **+2.3%** recall at scale | `similar_ads_lookup` and `anti_negative` should be included |
+| Full pipeline survival | Only 3.1% of positives reach AF | Cross-stage consistency is critical |
 | Full pipeline survival | 3.1% of positives reach AF | Cross-stage consistency is critical |
 
 ## Quick Start
@@ -159,11 +173,11 @@ agent_recommendation/
 
 ## Key Learnings
 
-1. **Claude reasoning adds +1.9% recall over RRF** — adaptive route selection helps, especially for weak-signal requests.
-2. **PM truncation is the #1 bottleneck** — 54% of positive ads lost at PM. Improving PM scoring or ML Reducer has highest impact.
-3. **ML Reducer > Heuristic** — +9.4% more positives preserved at 50% reduction.
-4. **Forced Retrieval is irreplaceable** — 14.2 unique positives per request at 7% overlap with other routes.
-5. **Exploration routes add +2.3% recall at scale** — `similar_ads_lookup` and `anti_negative` should be included in production blend.
-6. **HSNN sweet spot at k=3** — 71% compute savings at near-peak recall.
-7. **Small samples underestimate** — 10-request pilot showed exploration adds <0.1%; 100 requests revealed +2.3%.
+1. **Agent adds +3.6% recall@100 over baseline** (+28%) — adaptive route selection based on signal quality.
+2. **Three parallel flows** — PSelect + Forced Retrieval + Main Flow (ML Truncator → Prod Model). HSNN is a mode within prod model, not a separate route.
+3. **PM truncation is the #1 bottleneck** — 54% of positive ads lost. eCPM scoring (pCTR × pCVR × bid) via `pm_total_value` is more realistic than pCTR alone.
+4. **ML Reducer > Heuristic** — +9.4% more positives preserved at 50% reduction.
+5. **Forced Retrieval is irreplaceable** — 14.2 unique positives per request at 7% overlap.
+6. **Exploration routes add +2.3% recall at scale** — `similar_ads_lookup` and `anti_negative` should be included.
+7. **Agent Tool approach is 5x faster** — 6 parallel Haiku agents finish 100 requests in ~20 min vs 107 min with `claude -p` subprocess.
 8. **Data leakage inflates by 30-50%** — Train/test split essential.
