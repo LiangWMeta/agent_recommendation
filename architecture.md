@@ -25,6 +25,76 @@ For our ~2K candidate pool, we simulate production proportions:
 - **AI**: Top 100 (~5%, simulating 709/190K)
 - **AF**: Top 20 (~1%, simulating 84/190K)
 
+## Context Layer: Ads Pool Understanding + User Context
+
+Before the agent calls any retrieval tools, it reads rich context from two sources that feed the entire orchestration flow.
+
+```
+ads_pool/                               user/{request_id}/
+(refreshed regularly)                   (assembled per request)
+├── embeddings.npz                      ├── profile.md
+├── catalog.md                          ├── intent.md
+├── pool_overview.md                    ├── interests.md
+├── semantic_clusters.md                ├── session_history.md
+├── pool_changes.md                     ├── engagement.md
+                                        └── context.md
+        │                                       │
+        └──────────────┬────────────────────────┘
+                       ▼
+               Agent Orchestrator
+        (reads both before calling tools)
+```
+
+### Ads Pool Understanding (`ads_pool/`)
+
+A **living knowledge base** of the candidate ads pool. Refreshed regularly as ads update (new creatives, budget changes, targeting changes, expirations).
+
+| File | Content | Refresh Frequency |
+|------|---------|-------------------|
+| `embeddings.npz` | Ad embeddings (32d PSelect) + ad_ids + labels | Per data pipeline run |
+| `catalog.md` | All ads summarized: creative description, product category, advertiser objective, targeting criteria, budget, historical CTR, run duration | Daily or on ad updates |
+| `pool_overview.md` | Pool-level summary: total ads, category distribution, budget ranges, top categories by count and spend | On each refresh |
+| `semantic_clusters.md` | HSNN cluster → human-readable label mapping, per-cluster dominant category, avg CTR, size, example ads | On each refresh |
+| `pool_changes.md` | Delta log: new ads added, ads expired, creative updates, budget changes, cluster membership shifts since last refresh | On each refresh |
+
+**Current state**: `embeddings.npz` exists (from data pipeline). Rich metadata fields (creative description, product category, advertiser objective) are **schema-defined but not yet populated** — to be implemented when external metadata sources are integrated. Today, cluster labels and pool statistics are derived from embeddings.
+
+**Schema for `catalog.md` (per-ad entry)**:
+```markdown
+### Ad {ad_id}
+- **Category**: {product_category}          # e.g., fitness_app, ecommerce, gaming
+- **Objective**: {advertiser_objective}      # awareness | consideration | conversion
+- **Creative**: {creative_description}       # text summary of ad creative
+- **Targeting**: {targeting_summary}         # age, gender, interest, geo
+- **Budget**: ${daily_budget}/day, running {days_active} days
+- **Performance**: CTR {ctr}%, {impressions} impressions
+- **Cluster**: coarse_{cluster_id} / fine_{sub_cluster_id}
+- **Embedding norm**: {norm}, cosine to avg user: {avg_cosine}
+```
+
+### User Context Folder (`user/{request_id}/`)
+
+A **rich user profile** assembled per request. Provides the agent with semantic understanding of who the user is, what they want, and their engagement history — enabling reasoning beyond pure embedding similarity.
+
+| File | Content | Source |
+|------|---------|--------|
+| `profile.md` | User demographics, device, platform, placement, embedding summary (32d PSelect, norm, top components) | User profile store + embeddings |
+| `intent.md` | Current session intent: recent search queries, page context, inferred intent category (browse/search/purchase) | Session signals |
+| `interests.md` | Stable interest profile: interest clusters from engagement history, top categories by engagement rate, cross-surface signals (FB + IG + Messenger) | Long-term engagement data |
+| `session_history.md` | Ads shown this session, click/skip sequence, session duration, scroll depth, fatigue signals (repeated exposures, declining CTR) | Session logs |
+| `engagement.md` | Engagement history enriched with ad semantics: top engaged ads with descriptions, engagement by category/time/creative type | Engagement logs + ads catalog |
+| `context.md` | Request-level: pool size, similarity landscape, signal quality, placement type, auction constraints | Request metadata |
+
+**Current state**: `profile.md`, `engagement.md`, `interests.md` (as `interest_clusters.md`), and `context.md` exist today — derived from embeddings and labels via `prepare_contexts.py`. `intent.md` and `session_history.md` are **schema-defined but not yet populated** — to be implemented when session-level signals are available.
+
+### How Context Feeds the Agent Flow
+
+1. **Before diagnostics**: Agent reads `pool_overview.md` + `profile.md` to understand the landscape
+2. **During signal assessment**: Agent reads `engagement.md` + `interests.md` to contextualize similarity_gap
+3. **During retrieval**: Agent reads `semantic_clusters.md` to interpret HSNN cluster results with semantic labels
+4. **During pipeline reasoning**: Agent reads `intent.md` + `session_history.md` to assess fatigue and novelty
+5. **During ranking**: Agent reads `catalog.md` to understand what categories are represented in the final list
+
 ## Tool Organization
 
 All retrieval tools are organized into three tracks.

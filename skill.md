@@ -31,6 +31,17 @@
 
 ## Adaptive Strategy Framework
 
+### Step 0: Load Context (ALWAYS before tools)
+
+Read the context layer to understand the request before calling any retrieval tools:
+
+1. **Ads Pool**: Read `ads_pool/pool_overview.md` — understand pool size, category distribution, what changed since last refresh
+2. **User Profile**: Read `user/{request_id}/profile.md` + `interests.md` — who is this user, what do they care about
+3. **Session**: Read `user/{request_id}/session_history.md` + `intent.md` (when available) — what they've seen, what they want now
+4. **Engagement**: Read `user/{request_id}/engagement.md` — what they engaged with before, by category
+
+This context informs every downstream decision: which routes to prioritize, how to interpret cluster results, what diversity means for this user.
+
 ### Step 1: Assess Signal Quality (ALWAYS first)
 
 Call `engagement_pattern_analyzer`. Key diagnostics:

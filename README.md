@@ -8,7 +8,22 @@ Models the production **cascaded pipeline (AP → PM → AI → AF)** to enable 
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
+│  CONTEXT LAYER (read before tools)                                   │
+│  ┌──────────────────────────┐  ┌──────────────────────────────────┐ │
+│  │ Ads Pool Understanding   │  │ User Context Folder              │ │
+│  │ ads_pool/                │  │ user/{request_id}/               │ │
+│  │ - embeddings.npz         │  │ - profile.md (demographics+emb) │ │
+│  │ - catalog.md (all ads)   │  │ - intent.md (session intent)    │ │
+│  │ - pool_overview.md       │  │ - interests.md (stable prefs)   │ │
+│  │ - semantic_clusters.md   │  │ - session_history.md (fatigue)  │ │
+│  │ - pool_changes.md        │  │ - engagement.md (enriched)      │ │
+│  │ (refreshed regularly)    │  │ - context.md (request meta)     │ │
+│  └──────────────────────────┘  └──────────────────────────────────┘ │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                ▼
+┌──────────────────────────────────────────────────────────────────────┐
 │  Claude Code (Orchestrator)                                          │
+│  - Reads ads pool + user context to understand landscape & user      │
 │  - Assesses signal quality (similarity_gap → strong/moderate/weak)   │
 │  - Selects strategy: production-first, exploration for research      │
 │  - Reasons about pipeline survival: AP → PM → AI → AF               │
@@ -185,10 +200,27 @@ python3 evaluation/evaluate_pipeline.py --run-id agent_run
 
 ```
 agent_recommendation/
-├── CLAUDE.md                     # Agent instructions (prod/explore/diag tracks)
-├── architecture.md               # Pipeline architecture + tool mapping
+├── CLAUDE.md                     # Agent instructions (context + tools + strategy)
+├── architecture.md               # Pipeline architecture + context layer + tools
 ├── skill.md                      # Adaptive strategy + pipeline reasoning
 ├── learnings.md                  # Empirical findings from past runs
+│
+├── ads_pool/                     # Ads Pool Understanding (refreshed regularly)
+│   ├── embeddings.npz            # Ad embeddings (32d) + ad_ids + labels
+│   ├── catalog.md                # All ads: category, objective, creative, targeting, CTR
+│   ├── pool_overview.md          # Pool summary: size, categories, budget distribution
+│   ├── semantic_clusters.md      # HSNN cluster → semantic label mapping
+│   ├── pool_changes.md           # Delta log: new/expired/changed since last refresh
+│   └── refresh.py                # Script to regenerate from data sources
+│
+├── user/                         # User Context Folders (per request, rich)
+│   └── {request_id}/
+│       ├── profile.md            # Demographics, device, embedding summary
+│       ├── intent.md             # Session intent, inferred category
+│       ├── interests.md          # Stable interest clusters, top categories
+│       ├── session_history.md    # Ads seen, click/skip sequence, fatigue
+│       ├── engagement.md         # Enriched engagement history by category
+│       └── context.md            # Pool size, signal quality, placement
 │
 ├── tools/                        # 15 MCP retrieval tools
 │   ├── mcp_server.py             # MCP stdio server for claude -p
@@ -225,7 +257,7 @@ agent_recommendation/
 ├── scripts/
 │   ├── run_pilot_diagnosis.py    # Pilot: 5-question e2e diagnosis
 │   ├── create_split_data.py      # Train/test split (no leakage)
-│   ├── prepare_contexts.py       # Generate per-user context folders
+│   ├── prepare_contexts.py       # Generate user context folders
 │   ├── run_benchmark_cc.py       # Claude Code MCP benchmark
 │   ├── run_benchmark_fast.py     # Pre-computed tools benchmark
 │   ├── run_benchmark_batch.py    # Batch benchmark (5 per call)
@@ -234,9 +266,6 @@ agent_recommendation/
 │
 ├── outputs/
 │   ├── pilot_diagnosis/          # Pilot report + dashboard + results
-│   │   ├── report.md
-│   │   ├── dashboard.html
-│   │   └── results.json
 │   ├── system_architecture.html  # E2E architecture visualization
 │   └── ...                       # Benchmark outputs per run
 │
