@@ -79,24 +79,31 @@ def run_q1(rd):
 # Q2: Route Uniqueness Analysis
 # ---------------------------------------------------------------------------
 def run_q2(rd):
-    """Run 4 production routes, blend them, and collect route statistics."""
+    """Run 3 production flows, blend them, and collect route statistics.
+
+    Three parallel flows matching production architecture:
+    - Flow 1: PSelect (ANN retrieval)
+    - Flow 2: Forced Retrieval (flagged ads or centroid fallback)
+    - Flow 3: Main Flow = Prod Model (rank_all, eCPM scoring)
+    """
+    # Flow 1: PSelect
     emb_result = pselect_main_route(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=100,
     )
+    # Flow 2: Forced Retrieval
     fr_result = forced_retrieval(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=100,
+        request_id=rd["request_id"],
     )
-    hsnn_result = hsnn_cluster_scorer(
-        rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=100,
-    )
+    # Flow 3: Prod Model (rank_all mode, eCPM with pCTR fallback)
     pm_result = prod_model_ranker(
-        rd["ad_ids"], top_k=100, request_id=rd["request_id"],
+        rd["ad_ids"], top_k=100, mode="rank_all", request_id=rd["request_id"],
+        scoring="ecpm", ad_embs=rd["ad_embs"], user_emb=rd["user_emb"],
     )
 
     route_results = {
-        "embedding": [r["ad_id"] for r in emb_result.get("results", [])],
-        "fr_centroid": [r["ad_id"] for r in fr_result.get("results", [])],
-        "hsnn": [r["ad_id"] for r in hsnn_result.get("results", [])],
+        "pselect": [r["ad_id"] for r in emb_result.get("results", [])],
+        "forced_retrieval": [r["ad_id"] for r in fr_result.get("results", [])],
     }
     if pm_result.get("available", False):
         route_results["prod_model"] = [r["ad_id"] for r in pm_result.get("results", [])]
@@ -170,25 +177,27 @@ def run_q4(rd):
 # Q5: Production vs Exploration Route Value
 # ---------------------------------------------------------------------------
 def run_q5(rd):
-    """Measure recall@100 as exploration routes are incrementally added."""
-    # Production routes
+    """Measure recall@100 as exploration routes are incrementally added.
+
+    Production = three flows (PSelect + FR + Prod Model).
+    Exploration = hsnn_cluster_scorer, anti_negative, cluster_explorer, similar_ads.
+    """
+    # Production flows
     emb_result = pselect_main_route(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=100,
     )
     fr_result = forced_retrieval(
         rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=100,
-    )
-    hsnn_result = hsnn_cluster_scorer(
-        rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=100,
+        request_id=rd["request_id"],
     )
     pm_result = prod_model_ranker(
-        rd["ad_ids"], top_k=100, request_id=rd["request_id"],
+        rd["ad_ids"], top_k=100, mode="rank_all", request_id=rd["request_id"],
+        scoring="ecpm", ad_embs=rd["ad_embs"], user_emb=rd["user_emb"],
     )
 
     prod_routes = {
-        "embedding": [r["ad_id"] for r in emb_result.get("results", [])],
-        "fr_centroid": [r["ad_id"] for r in fr_result.get("results", [])],
-        "hsnn": [r["ad_id"] for r in hsnn_result.get("results", [])],
+        "pselect": [r["ad_id"] for r in emb_result.get("results", [])],
+        "forced_retrieval": [r["ad_id"] for r in fr_result.get("results", [])],
     }
     if pm_result.get("available", False):
         prod_routes["prod_model"] = [r["ad_id"] for r in pm_result.get("results", [])]
@@ -233,7 +242,14 @@ def run_q5(rd):
     else:
         sal_ids = []
 
+    # hsnn_cluster_scorer (now exploration, not prod)
+    hsnn_result = hsnn_cluster_scorer(
+        rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=100,
+    )
+    hsnn_ids = [r["ad_id"] for r in hsnn_result.get("results", [])]
+
     exploration_routes = [
+        ("hsnn_cluster", hsnn_ids),
         ("anti_negative", an_ids),
         ("cluster_explorer", cl_ids),
         ("similar_ads", sal_ids),
