@@ -531,7 +531,7 @@ def execute_tool(tool_name: str, args: Dict[str, Any], request_data: Dict[str, A
             pm_budget=args.get("pm_budget", 500),
             ai_budget=args.get("ai_budget", 100),
             af_budget=args.get("af_budget", 20),
-            prod_data_dir=request_data.get("prod_data_dir", "data_enriched"),
+            prod_data_dir=request_data.get("prod_data_dir", "data/local/model/enriched"),
             request_id=request_data.get("request_id"),
         )
 
@@ -557,7 +557,7 @@ def execute_tool(tool_name: str, args: Dict[str, Any], request_data: Dict[str, A
             target_stage=args.get("target_stage", "PM"),
             reduction_rate=args.get("reduction_rate", 0.5),
             method=args.get("method", "ml_value"),
-            prod_data_dir=request_data.get("prod_data_dir", "data_enriched"),
+            prod_data_dir=request_data.get("prod_data_dir", "data/local/model/enriched"),
             request_id=request_data.get("request_id"),
         )
 

@@ -2,7 +2,7 @@
 """Pilot diagnosis: exercise all pipeline tools and produce a diagnostic report.
 
 Usage:
-    python3 scripts/run_pilot_diagnosis.py [--max-requests 20] [--data-dir data_split] [--output-dir outputs/pilot_diagnosis]
+    python3 scripts/run_pilot_diagnosis.py [--max-requests 20] [--data-dir data/local/model/split] [--output-dir outputs/pilot_diagnosis]
 """
 
 import argparse
@@ -511,14 +511,14 @@ def write_report(output_dir, agg_q1, agg_q2, agg_q3, agg_q4, agg_q5,
 def main():
     parser = argparse.ArgumentParser(description="Pilot diagnosis: exercise all pipeline tools")
     parser.add_argument("--max-requests", type=int, default=20)
-    parser.add_argument("--data-dir", default="data_split")
+    parser.add_argument("--data-dir", default="data/local/model/split")
     parser.add_argument("--output-dir", default="outputs/pilot_diagnosis")
     args = parser.parse_args()
 
     # Resolve data directory with fallback
     data_dir = Path(args.data_dir)
     if not data_dir.exists():
-        data_dir = Path("data")
+        data_dir = Path("data/local/model/raw")
         if not data_dir.exists():
             print(f"ERROR: Neither {args.data_dir} nor data/ directory found.", file=sys.stderr)
             sys.exit(1)

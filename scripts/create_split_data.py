@@ -23,8 +23,8 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data-dir", default="data")
-    parser.add_argument("--output-dir", default="data_split")
+    parser.add_argument("--data-dir", default="data/local/model/raw")
+    parser.add_argument("--output-dir", default="data/local/model/split")
     parser.add_argument("--max-requests", type=int, default=100)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()

@@ -42,7 +42,7 @@ def main():
     parser.add_argument("--model-id", type=int, default=698799520, help="PSelect model ID")
     parser.add_argument("--max-requests", type=int, default=20)
     parser.add_argument("--top-n", type=int, default=2000, help="Top-N ads to extract per request")
-    parser.add_argument("--output-dir", default="data_bulk_eval")
+    parser.add_argument("--output-dir", default="data/local/eval/bulk_eval")
     args = parser.parse_args()
 
     logger.info(

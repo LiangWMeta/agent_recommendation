@@ -15,7 +15,7 @@ def ml_reducer(
     target_stage: str = "PM",
     reduction_rate: float = 0.5,
     method: str = "ml_value",
-    prod_data_dir: str = "data_enriched",
+    prod_data_dir: str = "data/local/model/enriched",
     request_id: int = None,
 ) -> Dict:
     """Simulate ML-driven truncation (ML Reducer/Truncator).

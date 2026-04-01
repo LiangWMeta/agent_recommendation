@@ -247,7 +247,7 @@ def run_single_request(request_id, prompt, model="sonnet"):
 def main():
     parser = argparse.ArgumentParser(description="Fast agent benchmark (pre-computed tools)")
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--data-dir", default="data_bulk_eval")
+    parser.add_argument("--data-dir", default="data/local/eval/bulk_eval")
     parser.add_argument("--requests-dir", default="requests_bulk_eval")
     parser.add_argument("--output-dir", default="outputs")
     parser.add_argument("--max-requests", type=int, default=20)

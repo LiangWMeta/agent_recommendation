@@ -1,9 +1,11 @@
-# Data (symlinked/large)
-data
-data_enriched/
+# Data (local files are large/symlinked — track registry only)
+data/local/
+!data/datasets.md
 
-# Generated user contexts
+# Generated contexts
 requests/
+requests_split/
+requests_bulk_eval/
 
 # Benchmark outputs
 outputs/
@@ -19,11 +21,5 @@ __pycache__/
 
 # Temp files
 *.tmp
-
-# Bulk eval extracted data
-data_bulk_eval/
-requests_bulk_eval/
-data_split/
-requests_split/
 batch_rankings.json
 .claude/

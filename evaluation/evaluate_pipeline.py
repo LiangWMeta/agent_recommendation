@@ -247,8 +247,8 @@ def main():
         description="Pipeline-aware evaluation: per-stage recall and consistency metrics"
     )
     parser.add_argument("--run-id", required=True, help="Run ID (subfolder under outputs/)")
-    parser.add_argument("--data-dir", default="data_split", help="Directory with .npz files")
-    parser.add_argument("--prod-dir", default="data_enriched", help="Directory with prod prediction JSONs")
+    parser.add_argument("--data-dir", default="data/local/model/split", help="Directory with .npz files")
+    parser.add_argument("--prod-dir", default="data/local/model/enriched", help="Directory with prod prediction JSONs")
     args = parser.parse_args()
 
     outputs_dir = os.path.join("outputs", args.run_id)

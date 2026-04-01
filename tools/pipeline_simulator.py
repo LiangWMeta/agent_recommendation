@@ -14,7 +14,7 @@ def pipeline_simulator(
     pm_budget: int = 500,
     ai_budget: int = 100,
     af_budget: int = 20,
-    prod_data_dir: str = "data_enriched",
+    prod_data_dir: str = "data/local/model/enriched",
     request_id: int = None,
 ) -> Dict:
     """Simulate the production ads retrieval cascaded pipeline: AP -> PM -> AI -> AF.

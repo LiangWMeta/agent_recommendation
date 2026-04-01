@@ -75,7 +75,7 @@ def main():
     parser.add_argument("--run-id", required=True, help="Run ID (subfolder under outputs/)")
     parser.add_argument("--baseline", default="evaluation/results/baseline.json",
                         help="Path to baseline results JSON")
-    parser.add_argument("--data-dir", default="data/", help="Directory with .npz files")
+    parser.add_argument("--data-dir", default="data/local/model/raw", help="Directory with .npz files")
     args = parser.parse_args()
 
     outputs_dir = os.path.join("outputs", args.run_id)

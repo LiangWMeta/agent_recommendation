@@ -155,13 +155,22 @@ Exploration tools can validate production investments:
 
 ## Data Available
 
-For each ad request:
-- User embedding (32d PSelect/TTSN)
-- All candidate ad embeddings (32d)
-- Engagement labels (positive = user engaged, negative = user didn't engage)
-- Train/test label split (history_labels for tools, test_labels for evaluation)
-- Production model predictions (calibrated CTR from SlimDSNN, when available)
-- Embedding-derived features (cosine score, norms, cluster assignments)
+See `data/datasets.md` for the full registry with schemas, loading code, and quickstart instructions.
+
+### Model Data (`data/local/model/`)
+- **`raw/`**: 306 requests — user embedding (32d PSelect/TTSN), ad embeddings (32d), engagement labels
+- **`split/`**: 100 requests — PRIMARY dataset with `history_labels` (tools) and `test_labels` (evaluation)
+- **`enriched/`**: 39 requests — production model predictions (calibrated CTR from SlimDSNN)
+- **`full_pool/`**: 1 request (WIP) — full 190K candidate pool
+
+### Evaluation Data (`data/local/eval/`)
+- **`bulk_eval/`**: 20 requests — extracted from production AI top-709 ranking
+
+### Remote Sources (Hive)
+- RAA engagement table → `data/local/model/raw/`
+- Prod predictions → `data/local/model/enriched/`
+- Bulk eval aggregate → `data/local/eval/bulk_eval/`
+- See `data/datasets.md` for Hive paths and extraction scripts
 
 ## Key Metrics
 

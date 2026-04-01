@@ -3,7 +3,7 @@
 MCP server that exposes retrieval tools for Claude Code.
 
 Usage:
-    python3 tools/mcp_server.py --request-npz data/request_1005207739.npz
+    python3 tools/mcp_server.py --request-npz data/local/model/raw/request_1005207739.npz
 
 This starts an MCP stdio server that Claude Code can connect to.
 The server exposes all 6 retrieval tools operating on the specified request's data.

@@ -7,7 +7,7 @@ from typing import Dict, Optional
 def prod_model_ranker(
     ad_ids: np.ndarray,
     top_k: int = 100,
-    prod_data_dir: str = "data_enriched",
+    prod_data_dir: str = "data/local/model/enriched",
     request_id: Optional[int] = None,
 ) -> Dict:
     """Rank ads by production model prediction (calibrated CTR from SlimDSNN).

@@ -23,7 +23,7 @@ from collections import defaultdict
 NAMESPACE = "ad_delivery"
 TABLE = "gr_p_select_bulk_eval_input_table"
 DS = "2026-03-22"
-OUTPUT_DIR = Path("data_enriched")
+OUTPUT_DIR = Path("data/local/model/enriched")
 BATCH_SIZE = 500  # ad_ids per query
 
 
@@ -108,8 +108,8 @@ def extract_for_request(request_id, ad_ids):
 
 def main():
     parser = argparse.ArgumentParser(description="Extract prod_prediction from Hive")
-    parser.add_argument("--data-dir", default="data", help="Directory with npz files")
-    parser.add_argument("--output-dir", default="data_enriched", help="Output directory")
+    parser.add_argument("--data-dir", default="data/local/model/raw", help="Directory with npz files")
+    parser.add_argument("--output-dir", default="data/local/model/enriched", help="Output directory")
     parser.add_argument("--max-requests", type=int, default=None)
     parser.add_argument("--skip-existing", action="store_true", help="Skip requests with existing output")
     args = parser.parse_args()

@@ -173,21 +173,23 @@ Several tool signals (FR centroid, anti-negative, cluster engagement) use engage
 
 ## Quick Start
 
+See `data/datasets.md` for the full dataset registry, schemas, and loading patterns.
+
 ```bash
 # 1. Create train/test split data (no leakage)
-python3 scripts/create_split_data.py --data-dir data --max-requests 100
+python3 scripts/create_split_data.py --data-dir data/local/model/raw --max-requests 100
 
 # 2. Generate user context files
-python3 scripts/prepare_contexts.py --data-dir data_split --output-dir requests_split --max-requests 100
+python3 scripts/prepare_contexts.py --data-dir data/local/model/split --output-dir user/
 
 # 3. Run fixed-weight baseline (instant, no LLM)
-python3 scripts/run_baseline_weighted.py --run-id baseline --data-dir data_split --max-requests 100
+python3 scripts/run_baseline_weighted.py --run-id baseline --data-dir data/local/model/split --max-requests 100
 
 # 4. Run pilot diagnosis (exercises all pipeline tools, ~10s)
-python3 scripts/run_pilot_diagnosis.py --max-requests 20 --data-dir data_split
+python3 scripts/run_pilot_diagnosis.py --max-requests 20
 
 # 5. Run agent benchmark (batch of 5 per Claude call)
-python3 scripts/run_benchmark_batch.py --run-id agent_run --data-dir data_split --batch-size 5 --max-requests 20
+python3 scripts/run_benchmark_batch.py --run-id agent_run --data-dir data/local/model/split --batch-size 5 --max-requests 20
 
 # 6. Evaluate (against test_labels only)
 python3 evaluation/evaluate.py --run-id agent_run --baseline evaluation/results/baseline.json
@@ -270,20 +272,27 @@ agent_recommendation/
 │   └── ...                       # Benchmark outputs per run
 │
 ├── data/ → ../mvp/data/real_data_light/  # 306 requests (symlink)
-├── data_split/                   # Train/test split data
-├── data_enriched/                # Prod predictions per request
-├── data_bulk_eval/               # Extracted from bulk eval
-└── data_full_pool/               # Full 190K pool (WIP)
+├── data/
+│   ├── datasets.md               # Dataset registry: schemas, quickstart, lineage
+│   └── local/
+│       ├── model/
+│       │   ├── raw/              # 306 requests, raw embeddings + labels
+│       │   ├── split/            # 100 requests, history + test (PRIMARY)
+│       │   ├── enriched/         # Prod prediction sidecars
+│       │   └── full_pool/        # 190K pool (WIP)
+│       └── eval/
+│           └── bulk_eval/        # 20 prod pipeline extracts
 ```
 
 ## Data Sources
 
 | Dataset | Requests | Candidates/Req | Labels | Use |
 |---------|---------|----------------|--------|-----|
-| `data/` (real_data_light) | 306 | ~2,000 | RAA engagement | Local evaluation |
-| `data_split/` | 100 | ~2,000 | Train/test split | Leakage-free eval |
-| `data_bulk_eval/` | 20 | ~2,000 | AI top-709 | Production-scale pilot |
-| `data_full_pool/` | 3 (WIP) | ~190,000 | Train/test split | Full coverage eval |
+| `data/local/model/raw/` | 306 | ~2,000 | RAA engagement | Source data |
+| `data/local/model/split/` | 100 | ~2,000 | Train/test split | **PRIMARY** — all local eval |
+| `data/local/model/enriched/` | 39 | — | Prod predictions (JSON) | PM-stage scoring |
+| `data/local/model/full_pool/` | 1 (WIP) | ~190,000 | Train/test split | Full coverage eval |
+| `data/local/eval/bulk_eval/` | 20 | ~2,000 | AI top-709 | Production-scale pilot |
 | Bulk eval aggregate | 50+ | ~190,000 | PM/AI/AF orderings | FBLearner recall |
 
 ## Key Learnings

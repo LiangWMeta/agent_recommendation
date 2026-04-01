@@ -74,7 +74,7 @@ def bootstrap_ci(values: np.ndarray, n_boot: int = 1000, alpha: float = 0.05) ->
 
 def main():
     parser = argparse.ArgumentParser(description="Cosine similarity baseline evaluation")
-    parser.add_argument("--data-dir", default="data/", help="Directory with .npz files")
+    parser.add_argument("--data-dir", default="data/local/model/raw", help="Directory with .npz files")
     parser.add_argument("--output", default="evaluation/results/baseline.json",
                         help="Output JSON path")
     parser.add_argument("--max-requests", type=int, default=None,
