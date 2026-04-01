@@ -99,13 +99,15 @@ Flow 3: ML Truncator → Prod Model ────────┘
 
 ### Agent Performance
 
-| Metric | Agent (v2, Haiku) | Baseline (cosine) | Delta | Improvement |
-|--------|------------------|-------------------|-------|-------------|
-| Recall@10 | 2.19% | 1.77% | +0.42% | +24% |
-| Recall@20 | 3.78% | 3.30% | +0.48% | +15% |
-| Recall@50 | 8.86% | 7.13% | +1.73% | +24% |
-| **Recall@100** | **16.41%** | **12.85%** | **+3.56%** | **+28%** |
-| NDCG@100 | 33.83% | — | — | — |
+| Metric | Agent (Haiku) | 3-Flow RRF Baseline | Cosine-Only | vs RRF | vs Cosine |
+|--------|--------------|--------------------|----|--------|-----------|
+| Recall@10 | 2.19% | 1.99% | 1.77% | +0.20% | +0.42% |
+| Recall@20 | 3.78% | 3.72% | 3.30% | +0.06% | +0.48% |
+| Recall@50 | 8.86% | 8.46% | 7.13% | +0.40% | +1.73% |
+| **Recall@100** | **16.41%** | **15.58%** | 12.85% | **+0.83%** | +3.56% |
+| NDCG@100 | 33.83% | 31.54% | — | +2.29% | — |
+
+Claude's adaptive reasoning adds **+0.83% recall@100** over fixed-weight 3-flow RRF baseline.
 
 ### Pipeline Diagnosis (100 requests)
 

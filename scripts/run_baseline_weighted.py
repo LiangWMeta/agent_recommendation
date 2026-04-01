@@ -21,9 +21,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from tools.pselect_main_route import pselect_main_route
 from tools.forced_retrieval import forced_retrieval
-from tools.anti_negative_scorer import anti_negative_scorer
-from tools.cluster_explorer import cluster_explorer
-from tools.engagement_analyzer import engagement_pattern_analyzer
 from tools.prod_model_ranker import prod_model_ranker
 
 
@@ -61,27 +58,35 @@ def weighted_rank_fusion(route_results, weights):
 
 
 def process_request(rd):
-    """Run all tools and combine with fixed weights."""
-    # Run tools
-    fr = forced_retrieval(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=150)
+    """Run three production flows and combine with fixed weights.
+
+    Three parallel flows matching production architecture:
+    - Flow 1: PSelect (ANN retrieval)
+    - Flow 2: Forced Retrieval (flagged or centroid fallback)
+    - Flow 3: Prod Model (eCPM scoring, rank_all mode)
+    """
+    # Flow 1: PSelect
     emb = pselect_main_route(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], top_k=150)
-    an = anti_negative_scorer(rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], alpha=0.3, top_k=100)
-    cl = cluster_explorer(rd["ad_embs"], rd["ad_ids"], n_clusters=5, top_k_per_cluster=30, labels=rd["labels"])
-    pm = prod_model_ranker(rd["ad_ids"], top_k=100, request_id=rd["request_id"])
+    # Flow 2: Forced Retrieval
+    fr = forced_retrieval(
+        rd["user_emb"], rd["ad_embs"], rd["ad_ids"], rd["labels"], top_k=150,
+        request_id=rd["request_id"],
+    )
+    # Flow 3: Prod Model (eCPM with pCTR fallback)
+    pm = prod_model_ranker(
+        rd["ad_ids"], top_k=150, mode="rank_all", request_id=rd["request_id"],
+        scoring="ecpm", ad_embs=rd["ad_embs"], user_emb=rd["user_emb"],
+    )
 
     # Extract ranked ad_id lists
     fr_ids = [r["ad_id"] for r in fr.get("results", [])]
     emb_ids = [r["ad_id"] for r in emb.get("results", [])]
-    an_ids = [r["ad_id"] for r in an.get("results", [])]
-    cl_ids = [r["ad_id"] for r in cl.get("ads", [])]
     pm_ids = [r["ad_id"] for r in pm.get("results", [])]
 
-    # Fixed weights — equal weighting across all routes
+    # Fixed weights — three production flows
     route_results = {
-        "fr_centroid": (fr_ids, 1.0),
-        "embedding": (emb_ids, 1.0),
-        "anti_negative": (an_ids, 1.0),
-        "cluster": (cl_ids, 0.5),  # slightly lower — cluster is diversity-focused
+        "pselect": (emb_ids, 1.0),
+        "forced_retrieval": (fr_ids, 1.0),
         "prod_model": (pm_ids, 1.0),
     }
 
