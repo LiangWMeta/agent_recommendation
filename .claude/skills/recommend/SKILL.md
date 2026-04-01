@@ -10,7 +10,7 @@ Run the ads recommendation agent on a batch of requests. For each request, load 
 ## Arguments
 
 - First arg or `--requests N`: Number of requests to process (default: 20)
-- `--run-id ID`: Run identifier for output directory (default: auto-generated timestamp)
+- `--run-id ID`: Run identifier for output directory (default: `run_YYYYMMDD_HHMMSS`)
 - `--data-dir PATH`: Data directory (default: `data/local/model/split`)
 - `--request ID`: Process a single specific request by ID
 
@@ -48,7 +48,7 @@ python3 tools/mcp_server.py --request-npz {data_dir}/request_{request_id}.npz
 
 Alternatively, for batch efficiency, use the benchmark script directly:
 ```bash
-python3 scripts/run_benchmark_batch.py --run-id {run_id} --data-dir {data_dir} --max-requests {N} --batch-size 5
+python3 scripts/run_baseline_weighted.py --run-id {run_id} --data-dir {data_dir} --max-requests {N}
 ```
 
 #### c. Follow skill.md reasoning
@@ -72,9 +72,21 @@ Write to `outputs/{run_id}/{request_id}.json`:
 }
 ```
 
+Also write `outputs/{run_id}/meta.json` with run metadata:
+```json
+{
+  "run_id": "run_20260331_214500",
+  "data_dir": "data/local/model/split",
+  "n_requests": 20,
+  "request_ids": [1005207739, 1017453312, ...],
+  "timestamp": "2026-03-31T21:45:00"
+}
+```
+
 ### 3. Summary
 
 After all requests, print:
 - Requests processed: N
+- Run ID: `{run_id}`
 - Output directory: `outputs/{run_id}/`
 - Suggest: "Run `/analyze --run-id {run_id}` to evaluate results"
