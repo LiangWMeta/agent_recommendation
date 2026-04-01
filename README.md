@@ -82,16 +82,28 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 
 ### Diagnostics: `engagement_pattern_analyzer`, `ads_pool_stats`, `lookup_similar_requests`
 
-## Pilot Results (10 requests)
+## Results (100 requests, Claude-orchestrated)
+
+### Agent Performance
+
+| Metric | Agent (Claude) | RRF (fixed-weight) | Baseline (cosine) | vs Baseline |
+|--------|---------------|--------------------|--------------------|-------------|
+| Recall@50 | 10.09% | 8.89% | 7.13% | **+41%** |
+| Recall@100 | **18.29%** | 16.36% | 12.85% | **+42%** |
+| NDCG@100 | 36.81% | 33.11% | — | — |
+
+Claude's adaptive reasoning adds **+1.93%** recall@100 over fixed-weight RRF.
+
+### Pipeline Diagnosis (100 requests)
 
 | Finding | Numbers | Implication |
 |---------|---------|-------------|
-| PM truncation is #1 bottleneck | 72.6% of positives lost | Improve PM scoring or widen budget |
-| ML Reducer > Heuristic | +6.8% positive preservation | Validates ML Reducer investment |
-| Forced Retrieval irreplaceable | 13.7 unique positives, 12% overlap | Must remain as dedicated PRM route |
-| HSNN sweet spot at k=3 | 73% compute savings, near-peak recall | Expanding beyond 5 has diminishing returns |
-| Production routes dominate | Exploration adds <0.1% recall | Exploration value is in diversity, not recall |
-| Full pipeline survival | Only 0.5% of positives reach AF | Cross-stage consistency is critical |
+| PM truncation is #1 bottleneck | 54.1% of positives lost | Improve PM scoring or widen budget |
+| ML Reducer > Heuristic | **+9.4%** positive preservation | Validates ML Reducer investment |
+| Forced Retrieval irreplaceable | 14.2 unique positives, 7% overlap | Must remain as dedicated PRM route |
+| HSNN sweet spot at k=3 | 71% compute savings, near-peak recall | Expanding beyond 5 has diminishing returns |
+| Exploration routes add value | **+2.3%** recall at scale | `similar_ads_lookup` and `anti_negative` should be included |
+| Full pipeline survival | 3.1% of positives reach AF | Cross-stage consistency is critical |
 
 ## Quick Start
 
@@ -142,10 +154,11 @@ agent_recommendation/
 
 ## Key Learnings
 
-1. **PM truncation is the #1 bottleneck** — 72.6% of positive ads lost at PM. Improving PM scoring or ML Reducer has highest impact.
-2. **ML Reducer > Heuristic** — +6.8% more positives preserved at 50% reduction.
-3. **Forced Retrieval is irreplaceable** — 13.7 unique positives per request at 12% overlap with other routes.
-4. **HSNN sweet spot at k=3** — 73% compute savings at near-peak recall.
-5. **Production routes dominate** — Exploration routes add <0.1% recall.
-6. **Data leakage inflates by 30-50%** — Train/test split essential.
-7. **Per-stage signals matter** — Only prior-stage signals are valid (PM→AI, not AI→AI).
+1. **Claude reasoning adds +1.9% recall over RRF** — adaptive route selection helps, especially for weak-signal requests.
+2. **PM truncation is the #1 bottleneck** — 54% of positive ads lost at PM. Improving PM scoring or ML Reducer has highest impact.
+3. **ML Reducer > Heuristic** — +9.4% more positives preserved at 50% reduction.
+4. **Forced Retrieval is irreplaceable** — 14.2 unique positives per request at 7% overlap with other routes.
+5. **Exploration routes add +2.3% recall at scale** — `similar_ads_lookup` and `anti_negative` should be included in production blend.
+6. **HSNN sweet spot at k=3** — 71% compute savings at near-peak recall.
+7. **Small samples underestimate** — 10-request pilot showed exploration adds <0.1%; 100 requests revealed +2.3%.
+8. **Data leakage inflates by 30-50%** — Train/test split essential.

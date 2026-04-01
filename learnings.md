@@ -47,16 +47,24 @@ When `similarity_gap < 0.01`:
 5. Within each cluster, rank ads by distance to cluster centroid (closest first)
 6. This outperforms embedding-first by ~2-3x on weak-signal requests
 
-## Pipeline Diagnosis Findings (2026-03-31, 5 requests)
+## Pipeline Diagnosis Findings (2026-04-01, 100 requests)
 
-1. **PM truncation loses 70% of positives** — the single largest bottleneck. prod_prediction (SlimDSNN CTR) is not well-aligned with engagement labels, causing good ads to be cut.
-2. **Forced Retrieval is 5.5x more valuable than embedding search** — 15.4 unique positives vs 2.8 per request, with only 8.6% overlap. It should receive higher blending weight.
-3. **HSNN and embedding search are 77% redundant** — HSNN mostly rediscovers what embedding already finds. Reducing HSNN expansion (k=2 vs k=3) saves compute with no recall loss.
-4. **ML Reducer outperforms heuristic by +8.7%** — preserves 68.6% vs 60.0% of positives at 50% reduction.
-5. **similar_ads_lookup and anti_negative_scorer each add ~0.8% recall** — they find genuinely different positives from production routes. cluster_explorer adds nothing (-0.01%).
+1. **PM truncation loses 54% of positives** — still the #1 bottleneck, but less severe than the 5-request pilot suggested (70%). At scale, PM survival is 45.9%.
+2. **Forced Retrieval is 4.4x more valuable than PSelect** — 14.2 unique positives vs 3.2 per request, with only 7.1% overlap. Irreplaceable as an independent route.
+3. **HSNN and PSelect are 73% redundant** — HSNN mostly rediscovers what PSelect already finds.
+4. **ML Reducer outperforms heuristic by +9.4%** — preserves 77.6% vs 68.1% of positives at 50% reduction. Stronger at 100 requests than at 5.
+5. **Exploration routes add +2.3% recall at scale** — the 10-request pilot showed <0.1%; at 100 requests, `similar_ads_lookup` adds +2.3% and `anti_negative_scorer` adds +1.7%. Small samples underestimate exploration value.
+6. **Claude reasoning adds +1.9% recall over fixed-weight RRF** — agent (18.3%) vs RRF (16.4%). Adaptive route selection helps, especially for weak-signal requests.
 
 ## Historical Patterns
 <!-- Updated automatically by scripts/update_learnings.py after each benchmark run -->
+
+### Run agent_100 (90 requests, Claude-orchestrated, 2026-04-01)
+- Recall@100: 18.29% (baseline: 12.85%, +42%)
+- Recall@100 vs RRF: 18.29% vs 16.36% (+1.93%)
+- Avg ranked ads: 161
+- Time: 73.4s/request (batch-5, sonnet)
+- 90/100 succeeded (2 batches had parse failures)
 
 ### Run cc_5req (4 requests evaluated)
 - Average recall@100: 13.6% (baseline: 12.9%)
