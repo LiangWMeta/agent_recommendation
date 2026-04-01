@@ -14,11 +14,13 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 **Typical workflow:**
 ```
 /data-setup                              # Prepare data (first time only)
-/recommend --requests 20                 # Run agent on 20 requests
-/analyze --requests 20                   # Analyze system behavior
+/recommend --requests 20 --run-id my_run # Run agent on 20 requests
+/analyze --run-id my_run                 # Analyze those results + suggest improvements
 /modify "add a route that scores by ad recency"  # Evolve the system
-/analyze --requests 20                   # Verify improvement
+/analyze --requests 20                   # Re-analyze with the new route
 ```
+
+`/analyze` links to `/recommend` via `--run-id` — it evaluates the exact same requests and also runs pipeline diagnosis. Without `--run-id`, it auto-discovers the most recent run or does fresh diagnosis.
 
 ## Architecture
 
@@ -69,12 +71,14 @@ LLM-orchestrated ads retrieval system that uses Claude Code to reason about the 
 
 ```bash
 # Using Claude Code skills (recommended)
-/data-setup                        # Prepare all data
-/recommend --requests 20           # Run agent
-/analyze --requests 20             # Analyze + suggest improvements
+/data-setup                                # Prepare all data
+/recommend --requests 20 --run-id my_run   # Run agent on 20 requests
+/analyze --run-id my_run                   # Analyze results + suggest improvements
+/modify "add a new retrieval route"        # Evolve the system
 
 # Using scripts directly (see data/datasets.md for full registry)
 python3 scripts/create_split_data.py --data-dir data/local/model/raw
+python3 scripts/run_baseline_weighted.py --run-id my_run --data-dir data/local/model/split --max-requests 20
 python3 scripts/run_pilot_diagnosis.py --max-requests 20
 python3 evaluation/evaluate.py --run-id my_run
 ```
