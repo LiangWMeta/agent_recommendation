@@ -4,6 +4,26 @@ LLM-orchestrated multi-route ads retrieval system that uses Claude Code as a hyb
 
 Models the production **cascaded pipeline (AP → PM → AI → AF)** to enable e2e reasoning about stage-by-stage filtering, cross-stage consistency, and retrieval route contributions.
 
+## Claude Code Skills
+
+The system is operated through 4 slash commands within Claude Code:
+
+| Command | Purpose |
+|---------|---------|
+| `/recommend` | Run agent recommendation on a batch of requests via MCP tools |
+| `/analyze` | Run diagnosis on requests, reason about results, suggest improvements |
+| `/modify` | Modify the system via natural language prompt (add route, add data, change algo) |
+| `/data-setup` | Pull and prepare all data needed to run the agent |
+
+**Typical workflow:**
+```
+/data-setup                              # Prepare data (first time only)
+/recommend --requests 20                 # Run agent on 20 requests
+/analyze --requests 20                   # Analyze system behavior
+/modify "add a route that scores by ad recency"  # Evolve the system
+/analyze --requests 20                   # Verify improvement
+```
+
 ## Architecture
 
 ```
@@ -173,6 +193,17 @@ Several tool signals (FR centroid, anti-negative, cluster engagement) use engage
 
 ## Quick Start
 
+### Using Claude Code Skills (recommended)
+
+```bash
+/data-setup                        # Prepare all data (first time)
+/recommend --requests 20           # Run agent on 20 requests
+/analyze --requests 20             # Analyze system behavior + suggest improvements
+/modify "add a new route"          # Modify the system
+```
+
+### Using Scripts Directly
+
 See `data/datasets.md` for the full dataset registry, schemas, and loading patterns.
 
 ```bash
@@ -182,19 +213,16 @@ python3 scripts/create_split_data.py --data-dir data/local/model/raw --max-reque
 # 2. Generate user context files
 python3 scripts/prepare_contexts.py --data-dir data/local/model/split --output-dir user/
 
-# 3. Run fixed-weight baseline (instant, no LLM)
-python3 scripts/run_baseline_weighted.py --run-id baseline --data-dir data/local/model/split --max-requests 100
-
-# 4. Run pilot diagnosis (exercises all pipeline tools, ~10s)
+# 3. Run pilot diagnosis (exercises all pipeline tools, ~10s)
 python3 scripts/run_pilot_diagnosis.py --max-requests 20
 
-# 5. Run agent benchmark (batch of 5 per Claude call)
+# 4. Run agent benchmark (batch of 5 per Claude call)
 python3 scripts/run_benchmark_batch.py --run-id agent_run --data-dir data/local/model/split --batch-size 5 --max-requests 20
 
-# 6. Evaluate (against test_labels only)
+# 5. Evaluate (against test_labels only)
 python3 evaluation/evaluate.py --run-id agent_run --baseline evaluation/results/baseline.json
 
-# 7. Pipeline evaluation (per-stage survival metrics)
+# 6. Pipeline evaluation (per-stage survival metrics)
 python3 evaluation/evaluate_pipeline.py --run-id agent_run
 ```
 
@@ -207,13 +235,18 @@ agent_recommendation/
 ├── skill.md                      # Adaptive strategy + pipeline reasoning
 ├── learnings.md                  # Empirical findings from past runs
 │
+├── .claude/skills/               # Claude Code skills (slash commands)
+│   ├── recommend/SKILL.md        # /recommend — run agent on requests
+│   ├── analyze/SKILL.md          # /analyze — diagnosis + reasoning
+│   ├── modify/SKILL.md           # /modify — system modification via prompt
+│   └── data-setup/SKILL.md       # /data-setup — data preparation
+│
 ├── ads_pool/                     # Ads Pool Understanding (refreshed regularly)
 │   ├── embeddings.npz            # Ad embeddings (32d) + ad_ids + labels
 │   ├── catalog.md                # All ads: category, objective, creative, targeting, CTR
 │   ├── pool_overview.md          # Pool summary: size, categories, budget distribution
 │   ├── semantic_clusters.md      # HSNN cluster → semantic label mapping
-│   ├── pool_changes.md           # Delta log: new/expired/changed since last refresh
-│   └── refresh.py                # Script to regenerate from data sources
+│   └── pool_changes.md           # Delta log: new/expired/changed since last refresh
 │
 ├── user/                         # User Context Folders (per request, rich)
 │   └── {request_id}/
@@ -224,64 +257,43 @@ agent_recommendation/
 │       ├── engagement.md         # Enriched engagement history by category
 │       └── context.md            # Pool size, signal quality, placement
 │
+├── data/
+│   ├── datasets.md               # Dataset registry: schemas, quickstart, lineage
+│   └── local/
+│       ├── model/                 # Model inputs (embeddings, predictions)
+│       │   ├── raw/              # 306 requests, raw embeddings + labels
+│       │   ├── split/            # 100 requests, history + test (PRIMARY)
+│       │   ├── enriched/         # Prod prediction sidecars (SlimDSNN CTR)
+│       │   └── full_pool/        # 190K candidate pool (WIP)
+│       └── eval/                  # Evaluation inputs
+│           └── bulk_eval/        # 20 prod pipeline extracts
+│
 ├── tools/                        # 15 MCP retrieval tools
-│   ├── mcp_server.py             # MCP stdio server for claude -p
+│   ├── mcp_server.py             # MCP stdio server
 │   ├── tool_registry.py          # Tool schemas + dispatch
-│   │
-│   │  Production Track:
-│   ├── embedding_search.py       # Cosine similarity (Main Route)
-│   ├── fr_centroid_search.py     # FR centroid retrieval
-│   ├── prod_model_ranker.py      # SlimDSNN calibrated CTR
-│   ├── hsnn_cluster_scorer.py    # 2-level HSNN hierarchy
-│   ├── pipeline_simulator.py     # AP→PM→AI→AF cascade
-│   ├── ml_reducer.py             # ML-driven truncation
-│   ├── parallel_routes_blender.py # PRM + ML Blender
-│   │
-│   │  Exploration Track:
-│   ├── anti_negative_scorer.py   # Directional scoring
-│   ├── cluster_explorer.py       # Flat K-means clustering
-│   ├── similar_ads.py            # Ad-to-ad similarity
-│   ├── mmr_reranker.py           # MMR diversity re-ranking
-│   ├── feature_filter.py         # Feature filtering
-│   │
-│   │  Diagnostics Track:
-│   ├── engagement_analyzer.py    # Signal diagnostics
-│   ├── pool_stats.py             # Pool statistics
-│   └── history_lookup.py         # Historical learning
+│   │  Production: embedding_search, fr_centroid_search, prod_model_ranker,
+│   │    hsnn_cluster_scorer, pipeline_simulator, ml_reducer, parallel_routes_blender
+│   │  Exploration: anti_negative_scorer, cluster_explorer, similar_ads,
+│   │    mmr_reranker, feature_filter
+│   │  Diagnostics: engagement_analyzer, pool_stats, history_lookup
 │
 ├── evaluation/
 │   ├── evaluate.py               # Recall/Precision/NDCG evaluator
 │   ├── evaluate_pipeline.py      # Per-stage survival + truncation robustness
 │   ├── baseline.py               # Dot-product baseline
-│   ├── compare_runs.py           # Run comparison
 │   └── prod_recall.py            # Production recall utilities
 │
 ├── scripts/
-│   ├── run_pilot_diagnosis.py    # Pilot: 5-question e2e diagnosis
+│   ├── run_pilot_diagnosis.py    # 5-question e2e diagnosis
 │   ├── create_split_data.py      # Train/test split (no leakage)
 │   ├── prepare_contexts.py       # Generate user context folders
-│   ├── run_benchmark_cc.py       # Claude Code MCP benchmark
-│   ├── run_benchmark_fast.py     # Pre-computed tools benchmark
 │   ├── run_benchmark_batch.py    # Batch benchmark (5 per call)
 │   ├── run_baseline_weighted.py  # Fixed-weight RRF baseline
 │   └── ...                       # FBLearner flow scripts
 │
-├── outputs/
-│   ├── pilot_diagnosis/          # Pilot report + dashboard + results
-│   ├── system_architecture.html  # E2E architecture visualization
-│   └── ...                       # Benchmark outputs per run
-│
-├── data/ → ../mvp/data/real_data_light/  # 306 requests (symlink)
-├── data/
-│   ├── datasets.md               # Dataset registry: schemas, quickstart, lineage
-│   └── local/
-│       ├── model/
-│       │   ├── raw/              # 306 requests, raw embeddings + labels
-│       │   ├── split/            # 100 requests, history + test (PRIMARY)
-│       │   ├── enriched/         # Prod prediction sidecars
-│       │   └── full_pool/        # 190K pool (WIP)
-│       └── eval/
-│           └── bulk_eval/        # 20 prod pipeline extracts
+└── outputs/                      # Benchmark outputs per run
+    ├── pilot_diagnosis/          # Pilot report + dashboard + results
+    └── system_architecture.html  # E2E architecture visualization
 ```
 
 ## Data Sources
