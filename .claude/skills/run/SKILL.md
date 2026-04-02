@@ -68,34 +68,69 @@ Process requests in waves of `wave_size` (default 5). For each wave, spawn agent
 **Agent prompt for each request:**
 
 ```
-You are an ads recommendation agent. Read the pre-computed tool results
-at /tmp/tool_results/{request_id}.md and user context at user/{request_id}/
-(profile.md, engagement.md, interest_clusters.md, context.md).
+You are an ads recommendation agent. Your job is to produce the best possible
+ranked list of 200 ad IDs by combining pre-computed retrieval results.
 
-Follow this reasoning:
-1. Check similarity_gap from engagement_pattern_analyzer:
-   - > 0.05: Strong signal — trust pselect_main_route as primary
-   - 0.01-0.05: Moderate — blend pselect and forced_retrieval equally
-   - < 0.01: Weak — forced_retrieval is primary, don't trust pselect
+## Input
+Read /tmp/tool_results/{request_id}.md (pre-computed tool results) and
+user/{request_id}/ context files (profile.md, engagement.md, interest_clusters.md).
 
-2. Assess route reliability:
-   - forced_retrieval centroid_gap vs user_emb_gap — which is stronger?
-   - centroid_vs_user_correlation — low means independent signals (good)
+## Algorithm: Weighted Rank Fusion with Cluster Awareness
 
-3. Look for consensus ads appearing in multiple routes (high confidence).
+### Phase 1: Assess Signal Quality
+Read engagement_pattern_analyzer from the tool results:
+- similarity_gap: measures how well user embedding separates positive from negative ads
+- centroid_gap: measures FR centroid signal strength
+- overlap_fraction: >0.5 means embedding is weak
 
-4. Check cluster engagement rates — high engagement clusters deserve more candidates.
-   If a cluster has high engagement but low route coverage, those ads are being missed.
+Determine signal regime:
+- STRONG: similarity_gap > 0.05 AND overlap_fraction < 0.3
+- WEAK: similarity_gap < 0.01 OR overlap_fraction > 0.5
+- MODERATE: everything else
 
-5. Use prod_model_ranker if available — strongest per-ad quality signal.
+### Phase 2: Score Every Ad
+For each ad that appears in ANY route, compute a combined score using
+WEIGHTED RECIPROCAL RANK FUSION:
 
-6. Merge routes: consensus first, forced_retrieval unique finds, high-engagement
-   cluster ads, prod_model top ads, pselect/anti-negative to fill.
+  score(ad) = sum over routes of: weight[route] / rank_in_route(ad)
 
-Write output as JSON to outputs/{run_id}/{request_id}.json:
-{"request_id": {request_id}, "ranked_ads": [id1, id2, ...], "strategy": "your reasoning"}
+Route weights by signal regime:
 
-Include 150+ ranked ad IDs.
+| Route              | STRONG | MODERATE | WEAK  |
+|--------------------|--------|----------|-------|
+| prod_model_ranker  | 3.0    | 3.0      | 3.0   |
+| forced_retrieval   | 2.0    | 2.5      | 3.0   |
+| pselect_main_route | 2.5    | 1.5      | 0.5   |
+| anti_negative      | 1.5    | 1.5      | 2.0   |
+| cluster_explorer   | 1.0    | 1.0      | 1.5   |
+
+Bonus: if an ad appears in 3+ routes, add +1.0 to its score (consensus bonus).
+Bonus: if an ad is in top_positive_ad_ids from engagement_pattern_analyzer, add +2.0.
+
+### Phase 3: Cluster-Aware Diversity
+Read cluster engagement rates from engagement_pattern_analyzer.
+After scoring, ensure the top-100 covers all high-engagement clusters (rate > 5%):
+- For each high-engagement cluster, at least 10 ads from that cluster
+  should appear in the top 100.
+- If a cluster is under-represented, promote its highest-scoring ads up.
+- Cap any single cluster at 40% of the top-100 to avoid over-concentration.
+
+### Phase 4: Final Ranking
+1. Sort all ads by combined score (descending)
+2. Apply cluster diversity adjustment from Phase 3
+3. Output the top 200 ads
+
+## Output
+Write JSON to outputs/{run_id}/{request_id}.json:
+{
+  "request_id": {request_id},
+  "ranked_ads": [id1, id2, ...],
+  "strategy": "signal={STRONG|MODERATE|WEAK} gap=X.XX, top_routes=[...], n_consensus=N, cluster_coverage=[...]"
+}
+
+Include exactly 200 ranked ad IDs. This is critical — the more ads you rank,
+the higher the recall. Parse ALL ad IDs from the "Full result ad_ids" lines
+in the tool results, not just the top-10 summaries.
 ```
 
 **Agent settings:** `mode: "auto"`, `run_in_background: true`
