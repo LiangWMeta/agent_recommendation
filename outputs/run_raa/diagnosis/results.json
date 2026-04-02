@@ -1,0 +1,93 @@
+{
+  "n_requests": 100,
+  "data_dir": "data/local/model/split",
+  "has_split": true,
+  "q1_stage_dropoff": {
+    "AP": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "PM": {
+      "mean": 0.36120699711990967,
+      "std": 0.14731352567803974
+    },
+    "AI": {
+      "mean": 0.08189464891637865,
+      "std": 0.045386799527766995
+    },
+    "AF": {
+      "mean": 0.02269537772382548,
+      "std": 0.01964246630882899
+    }
+  },
+  "q2_route_uniqueness": {
+    "forced_retrieval": {
+      "avg_candidates": 64.02,
+      "avg_unique": 56.83,
+      "avg_unique_positives": 3.98,
+      "avg_overlap": 0.120869
+    },
+    "prod_model": {
+      "avg_candidates": 100.0,
+      "avg_unique": 90.54,
+      "avg_unique_positives": 6.61,
+      "avg_overlap": 0.09459999999999999
+    },
+    "pselect": {
+      "avg_candidates": 100.0,
+      "avg_unique": 85.64,
+      "avg_unique_positives": 9.51,
+      "avg_overlap": 0.1436
+    }
+  },
+  "q3_ml_vs_heuristic": {
+    "ml_value": {
+      "avg_value_preserved": 0.04069857284605181,
+      "avg_positive_preservation": 0.7377244817207331
+    },
+    "heuristic_cosine": {
+      "avg_value_preserved": 0.0,
+      "avg_positive_preservation": 0.6814524475430045
+    }
+  },
+  "q4_hsnn_budget": {
+    "2": {
+      "avg_recall_at_100": 0.11203709711357929,
+      "avg_compute_savings": 0.8111911662133443
+    },
+    "3": {
+      "avg_recall_at_100": 0.11413065246082547,
+      "avg_compute_savings": 0.7076155272287008
+    },
+    "5": {
+      "avg_recall_at_100": 0.12200959688907187,
+      "avg_compute_savings": 0.5019406478195055
+    },
+    "8": {
+      "avg_recall_at_100": 0.12694943732010266,
+      "avg_compute_savings": 0.19761253191579378
+    }
+  },
+  "q5_prod_vs_exploration": {
+    "prod_only": {
+      "avg_recall_at_100": 0.12476037785063944,
+      "delta_vs_prod_only": 0.0
+    },
+    "prod + hsnn_cluster": {
+      "avg_recall_at_100": 0.12892374538242168,
+      "delta_vs_prod_only": 0.004163367531782244
+    },
+    "prod + anti_negative": {
+      "avg_recall_at_100": 0.14292697685244304,
+      "delta_vs_prod_only": 0.018166599001803604
+    },
+    "prod + cluster_explorer": {
+      "avg_recall_at_100": 0.14154470794219537,
+      "delta_vs_prod_only": 0.01678433009155593
+    },
+    "prod + similar_ads": {
+      "avg_recall_at_100": 0.15654235585651521,
+      "delta_vs_prod_only": 0.031781978005875774
+    }
+  }
+}

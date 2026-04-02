@@ -16,12 +16,16 @@ def pipeline_simulator(
     af_budget: int = 20,
     prod_data_dir: str = "data/local/model/enriched",
     request_id: int = None,
+    fr_bypass: bool = True,
 ) -> Dict:
     """Simulate the production ads retrieval cascaded pipeline: AP -> PM -> AI -> AF.
 
     Each stage progressively filters candidates using increasingly sophisticated
     scoring. Tracks positive (engaged) ad survival across stages to identify
     where the funnel loses valuable candidates.
+
+    In production, FR-flagged ads bypass PM truncation. This is controlled by
+    the fr_bypass parameter (default True).
 
     Args:
         user_emb: User embedding vector, shape [D].
@@ -34,6 +38,7 @@ def pipeline_simulator(
         af_budget: How many ads survive AdFilter (final).
         prod_data_dir: Directory containing prod prediction sidecar files.
         request_id: Request ID to load prod predictions for.
+        fr_bypass: If True, FR-flagged ads bypass PM truncation (production behavior).
 
     Returns:
         Dict with per-stage stats, cross-stage rank correlations, and drop-off summary.
@@ -55,17 +60,31 @@ def pipeline_simulator(
     # --- Load prod predictions if available ---
     scoring_method = "cosine_fallback"
     pred_map = {}
+    ecpm_map = {}
+    fr_set = set()
     if request_id is not None:
         prod_path = Path(prod_data_dir) / f"{request_id}_prod.json"
         if prod_path.exists():
             with open(prod_path) as f:
                 prod_data = json.load(f)
-            pred_map = {
-                int(entry["ad_id"]): float(entry["prod_prediction"])
-                for entry in prod_data
-                if entry.get("prod_prediction") is not None
-            }
-            if pred_map:
+            for entry in prod_data:
+                aid = int(entry.get("ad_id", 0))
+                if entry.get("prod_prediction") is not None:
+                    pred_map[aid] = float(entry["prod_prediction"])
+                # eCPM priority: median_pm_tv (RAA, best) > median_ecpm > pm_total_value
+                if entry.get("median_pm_tv") is not None:
+                    ecpm_map[aid] = float(entry["median_pm_tv"])
+                elif entry.get("median_ecpm") is not None:
+                    ecpm_map[aid] = float(entry["median_ecpm"])
+                elif entry.get("pm_total_value") is not None:
+                    ecpm_map[aid] = float(entry["pm_total_value"])
+                if entry.get("is_forced_retrieval"):
+                    fr_set.add(aid)
+            n_ads_in_file = len(prod_data)
+            # Use eCPM only if coverage is meaningful (>20% of ads)
+            if ecpm_map and len(ecpm_map) / max(n_ads_in_file, 1) > 0.2:
+                scoring_method = "ecpm"
+            elif pred_map:
                 scoring_method = "prod_prediction"
 
     stages_output = {}
@@ -96,20 +115,28 @@ def pipeline_simulator(
                              total_positives, scoring_method)
 
     # ---- PM stage ----
-    if scoring_method == "prod_prediction":
-        # Score by prod_prediction
+    # FR bypass: identify FR-flagged ads among survivors
+    fr_mask = np.array([int(ad_ids[i]) in fr_set for i in surviving_idx])
+    n_fr_in_pool = int(fr_mask.sum())
+
+    # Score all survivors for ranking
+    # Scoring priority: eCPM (best) > cosine + cluster bonus (decent) > prod_prediction (poor)
+    # Note: prod_prediction (pCTR alone) has ~0.97x separation ratio — worse than cosine.
+    # eCPM (pm_total_value) has 36.6x separation where available.
+    if scoring_method == "ecpm":
+        # Use eCPM where available; cosine fallback for missing (NOT prod_prediction)
         pm_scores = np.array([
-            pred_map.get(int(ad_ids[i]), 0.0) for i in surviving_idx
+            ecpm_map.get(int(ad_ids[i]), cosine_scores[i])
+            for i in surviving_idx
         ])
     else:
-        # Fallback: cosine similarity + small cluster engagement bonus
+        # Cosine similarity + cluster engagement bonus — better than prod_prediction
         from sklearn.cluster import KMeans
 
         n_clusters = min(10, n_total)
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
         cluster_labels = kmeans.fit_predict(ad_embs)
 
-        # Compute per-cluster engagement rate as bonus
         cluster_eng_rate = np.zeros(n_clusters)
         for cid in range(n_clusters):
             mask = cluster_labels == cid
@@ -119,10 +146,29 @@ def pipeline_simulator(
 
         bonus = cluster_eng_rate[cluster_labels[surviving_idx]]
         pm_scores = cosine_scores[surviving_idx] + 0.1 * bonus
+        scoring_method = "cosine_cluster"
 
-    pm_order = np.argsort(pm_scores)[::-1]
-    pm_keep = min(pm_budget, len(pm_order))
-    pm_selected = pm_order[:pm_keep]
+    if fr_bypass and n_fr_in_pool > 0:
+        # FR ads bypass PM truncation — guaranteed survival
+        fr_indices = np.where(fr_mask)[0]
+        non_fr_indices = np.where(~fr_mask)[0]
+
+        # Non-FR ads compete for remaining budget
+        non_fr_budget = max(0, pm_budget - len(fr_indices))
+        non_fr_scores = pm_scores[non_fr_indices]
+        non_fr_order = np.argsort(non_fr_scores)[::-1]
+        non_fr_keep = min(non_fr_budget, len(non_fr_order))
+        non_fr_selected = non_fr_indices[non_fr_order[:non_fr_keep]]
+
+        # Merge FR + non-FR survivors
+        pm_selected = np.concatenate([fr_indices, non_fr_selected])
+        # Sort by score for consistent ordering
+        pm_selected = pm_selected[np.argsort(pm_scores[pm_selected])[::-1]]
+        pm_keep = len(pm_selected)
+    else:
+        pm_order = np.argsort(pm_scores)[::-1]
+        pm_keep = min(pm_budget, len(pm_order))
+        pm_selected = pm_order[:pm_keep]
 
     pm_surviving_idx = surviving_idx[pm_selected]
     pm_ad_ids_sorted = ad_ids[pm_surviving_idx]
@@ -135,6 +181,8 @@ def pipeline_simulator(
         "n_positives_survived": pm_positives,
         "positive_survival_rate": float(pm_positives / total_positives) if total_positives > 0 else 0.0,
         "top_ad_ids": [int(x) for x in pm_ad_ids_sorted[:20]],
+        "n_fr_bypass": int(n_fr_in_pool) if fr_bypass else 0,
+        "scoring_method": scoring_method,
     }
 
     surviving_idx = pm_surviving_idx
@@ -205,10 +253,11 @@ def pipeline_simulator(
                              ai_scores_for_survivors=ai_scores_for_survivors)
 
     # ---- AF stage ----
-    # Final ranking by PM score (production full model)
-    if scoring_method == "prod_prediction":
+    # Final ranking by eCPM / cosine
+    if scoring_method == "ecpm":
         af_scores = np.array([
-            pred_map.get(int(ad_ids[i]), 0.0) for i in surviving_idx
+            ecpm_map.get(int(ad_ids[i]), cosine_scores[i])
+            for i in surviving_idx
         ])
     else:
         af_scores = cosine_scores[surviving_idx]

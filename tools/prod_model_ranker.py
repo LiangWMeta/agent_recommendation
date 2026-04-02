@@ -52,13 +52,23 @@ def prod_model_ranker(
         prod_data = json.load(f)
 
     # Build ad_id -> scores mapping
+    # eCPM priority: median_pm_tv (RAA) > median_ecpm > pm_total_value > prod_prediction
     score_map = {}
     ecpm_available = False
     for entry in prod_data:
         aid = int(entry.get("ad_id", 0))
-        if scoring == "ecpm" and entry.get("pm_total_value") is not None:
-            score_map[aid] = float(entry["pm_total_value"])
-            ecpm_available = True
+        if scoring == "ecpm":
+            if entry.get("median_pm_tv") is not None:
+                score_map[aid] = float(entry["median_pm_tv"])
+                ecpm_available = True
+            elif entry.get("median_ecpm") is not None:
+                score_map[aid] = float(entry["median_ecpm"])
+                ecpm_available = True
+            elif entry.get("pm_total_value") is not None:
+                score_map[aid] = float(entry["pm_total_value"])
+                ecpm_available = True
+            elif entry.get("prod_prediction") is not None:
+                score_map[aid] = float(entry["prod_prediction"])
         elif entry.get("prod_prediction") is not None:
             score_map[aid] = float(entry["prod_prediction"])
 
