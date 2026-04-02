@@ -68,65 +68,52 @@ Process requests in waves of `wave_size` (default 5). For each wave, spawn agent
 **Agent prompt for each request:**
 
 ```
-You are an ads recommendation agent. Find NEW ads the user will engage with.
+You are an ads recommendation agent. Implement EXACTLY this algorithm:
 
-## Input
-Read /tmp/tool_results/{request_id}.md (pre-computed tool results).
+## Step 1: Parse ALL ad IDs from the tool results file
 
-## Algorithm: Route-Balanced Weighted Rank Fusion
+Read /tmp/tool_results/{request_id}.md. For each of these 5 routes, find the
+line starting with "Full result ad_ids" and parse the COMPLETE list of ad IDs
+in the square brackets:
 
-### Phase 1: Parse ALL Candidates
-Extract EVERY ad ID from ALL "Full result ad_ids" lines across all routes.
-Parse all 5 route lists completely. This gives ~400-500 unique ads.
+- forced_retrieval (FR): ~150 ads
+- pselect_main_route (PS): ~150 ads  
+- anti_negative_scorer (AN): ~100 ads
+- prod_model_ranker (PM): ~100 ads (may be 0 if unavailable)
+- cluster_explorer (CE): ~150 ads
 
-### Phase 2: Read Signal Quality
-From engagement_pattern_analyzer: similarity_gap, overlap_fraction.
-- STRONG: gap > 0.05 AND overlap < 0.3
-- WEAK: gap < 0.01 OR overlap > 0.5
-- MODERATE: else
+Record the RANK (position 0, 1, 2, ...) of each ad within its route's list.
 
-NOTE: top_positive_ad_ids are PAST history. Do NOT boost them.
+## Step 2: Score each ad using Equal-Weight RRF
 
-### Phase 3: Score Every Candidate
-For each unique ad, compute:
+For every unique ad ID across all routes, compute:
 
-  score(ad) = sum over routes of: weight[route] / (rank_in_route + 30)
+  score(ad) = sum over each route where ad appears of: 1.0 / (rank + 60)
 
-Route weights (EQUAL emphasis to maximize recall from all routes):
+This is standard Reciprocal Rank Fusion with k=60. ALL routes get EQUAL
+weight of 1.0. Do NOT adjust weights. Do NOT add bonuses. Do NOT boost
+top_positive_ad_ids (those are history).
 
-| Route              | STRONG | MODERATE | WEAK  |
-|--------------------|--------|----------|-------|
-| forced_retrieval   | 2.5    | 2.5      | 3.0   |
-| pselect_main_route | 2.5    | 2.0      | 1.0   |
-| anti_negative      | 2.5    | 2.5      | 2.5   |
-| prod_model_ranker  | 3.0    | 3.0      | 3.0   |
-| cluster_explorer   | 2.0    | 2.0      | 2.5   |
+The k=60 constant is critical — it flattens the curve so that ads at any
+rank position contribute meaningfully, maximizing recall.
 
-Bonuses:
-- Ad appears in 3+ routes: +1.5
-- Ad appears in 2 routes: +0.5
-- Ad in cluster with engagement_rate > 10%: +0.5
+## Step 3: Sort and output
 
-DO NOT boost top_positive_ad_ids.
-
-### Phase 4: Route-Diversity Guarantee
-After scoring, ensure the top-100 includes contributions from ALL routes:
-- At least 15 ads from each route's top-50 must appear in the final top-100.
-  If a route is under-represented, promote its highest-scoring unique ads.
-  This prevents any single route from dominating and missing unique positives.
-- Cap any single route at 40 ads in top-100.
-
-### Phase 5: Output
-Sort by score, apply route-diversity, output top 300 ads.
+Sort all ads by score descending. Output ALL of them (typically 350-400 ads).
 
 Write JSON to outputs/{run_id}/{request_id}.json:
 {
   "request_id": {request_id},
-  "ranked_ads": [id1, id2, ...],
-  "strategy": "signal=X gap=Y.YY n_candidates=N"
+  "ranked_ads": [all scored ads sorted by score],
+  "strategy": "rrf_k60 n_candidates=N"
 }
 
-Output 300 ranked ad IDs. Parse ALL route ad lists completely.
+## CRITICAL RULES
+- Parse the FULL ad_id lists, not just top-10 summaries
+- Use EXACTLY k=60 and weight=1.0 for all routes
+- Do NOT add any bonuses or adjustments
+- Output ALL scored ads (350+), not a fixed 300
+- This simple algorithm outperforms complex weighted schemes
 ```
 
 **Agent settings:** `mode: "auto"`, `run_in_background: true`
