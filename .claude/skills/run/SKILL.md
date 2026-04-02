@@ -68,23 +68,24 @@ Process requests in waves of `wave_size` (default 5). For each wave, spawn agent
 **Agent prompt for each request:**
 
 ```
-You are an ads recommendation agent optimized for RECALL. Your goal is to
-include as many positive (engaged) ads as possible in your top-100 ranked list.
+You are an ads recommendation agent. Your goal is to find NEW ads the user
+will engage with — not just re-rank known history. Maximize recall on UNSEEN
+positive ads in your top-100.
 
 ## Input
 Read /tmp/tool_results/{request_id}.md (pre-computed tool results).
 
-## Algorithm: Recall-Optimized Weighted Rank Fusion
+## Algorithm: Weighted Rank Fusion (Recall + Ranking)
 
 ### Phase 1: Parse ALL Candidates
 Extract EVERY ad ID from ALL "Full result ad_ids" lines across all routes.
-You must parse all 5 route lists completely:
+Parse all 5 route lists completely:
 - forced_retrieval: 150 ads
 - pselect_main_route: 150 ads
 - anti_negative_scorer: 100 ads
 - prod_model_ranker: 100 ads (if available)
 - cluster_explorer: 150 ads
-This gives you ~400-500 unique candidate ads. ALL of them must be scored.
+This gives ~400-500 unique candidate ads. ALL must be scored.
 
 ### Phase 2: Read Signal Quality
 From engagement_pattern_analyzer:
@@ -93,17 +94,19 @@ From engagement_pattern_analyzer:
 - WEAK: gap < 0.01 OR overlap > 0.5
 - MODERATE: else
 
-Also read: top_positive_ad_ids (known engaged ads — these MUST be in output).
-Also read: cluster engagement rates — note which clusters have rate > 5%.
+Also read: cluster engagement rates — note clusters with rate > 5%.
+
+NOTE: top_positive_ad_ids are PAST engagements (history). Do NOT boost them.
+Focus on finding NEW ads the user hasn't engaged with yet.
 
 ### Phase 3: Score Every Candidate
-For each of the ~400-500 unique ads, compute:
+For each unique ad, compute:
 
-  score(ad) = sum over routes of: weight[route] / (rank_in_route + 60)
+  score(ad) = sum over routes of: weight[route] / (rank_in_route + 30)
 
-The +60 constant (instead of +1) flattens the rank curve, giving more weight
-to ads that appear in ANY route even at low ranks. This improves recall by
-not over-concentrating on top-ranked ads from each route.
+The +30 constant flattens the rank curve moderately — ads at rank #1 get
+weight/31, rank #150 gets weight/180 (ratio ~6x). This balances between
+top-ranking quality and recall breadth.
 
 Route weights by signal regime:
 
@@ -112,25 +115,22 @@ Route weights by signal regime:
 | forced_retrieval   | 2.5    | 3.0      | 3.5   |
 | pselect_main_route | 2.5    | 1.5      | 0.5   |
 | anti_negative      | 2.0    | 2.0      | 2.5   |
-| prod_model_ranker  | 2.0    | 2.0      | 2.0   |
+| prod_model_ranker  | 3.0    | 3.0      | 3.0   |
 | cluster_explorer   | 1.5    | 1.5      | 2.0   |
 
-Bonuses (these are critical for recall):
-- Ad in top_positive_ad_ids: +5.0 (MUST be in output — known engaged)
-- Ad appears in 3+ routes: +2.0 (multi-route consensus)
-- Ad appears in 2 routes: +1.0
-- Ad is in a cluster with engagement_rate > 10%: +1.0
-- Ad is in a cluster with engagement_rate > 20%: +2.0 (additional)
+Bonuses:
+- Ad appears in 3+ routes: +2.0 (multi-route consensus — strongest signal)
+- Ad appears in 2 routes: +0.5
+- Ad is in a cluster with engagement_rate > 10%: +0.5
+- Ad is in a cluster with engagement_rate > 20%: +1.0 (additional)
 
-### Phase 4: Recall-Maximizing Output
+DO NOT give bonus to top_positive_ad_ids — those are history, not prediction.
+
+### Phase 4: Output
 1. Sort all ~400-500 ads by combined score descending
-2. The top-100 MUST include ALL top_positive_ad_ids that appear in any route
-3. Ensure every cluster with engagement_rate > 5% has at least 15 ads in top 150
-4. Output ALL scored ads (target 300+), not just top 200
-
-The key insight: recall@100 measures how many of the ~97 positive ads appear
-in your top 100. Every positive you miss is a recall loss. Spread your bets
-across routes rather than concentrating on one route's top picks.
+2. Ensure every cluster with engagement_rate > 5% has at least 10 ads in top 100
+3. Cap any single cluster at 35 ads in top 100 to ensure diversity
+4. Output top 300 ads
 
 ## Output
 Write JSON to outputs/{run_id}/{request_id}.json:
@@ -140,7 +140,7 @@ Write JSON to outputs/{run_id}/{request_id}.json:
   "strategy": "signal=X gap=Y.YY n_candidates=N n_consensus=N"
 }
 
-Output 300+ ranked ad IDs. Parse ALL route ad lists completely.
+Output 300 ranked ad IDs. Parse ALL route ad lists completely.
 ```
 
 **Agent settings:** `mode: "auto"`, `run_in_background: true`
