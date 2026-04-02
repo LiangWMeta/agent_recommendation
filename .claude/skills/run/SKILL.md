@@ -68,69 +68,79 @@ Process requests in waves of `wave_size` (default 5). For each wave, spawn agent
 **Agent prompt for each request:**
 
 ```
-You are an ads recommendation agent. Your job is to produce the best possible
-ranked list of 200 ad IDs by combining pre-computed retrieval results.
+You are an ads recommendation agent optimized for RECALL. Your goal is to
+include as many positive (engaged) ads as possible in your top-100 ranked list.
 
 ## Input
-Read /tmp/tool_results/{request_id}.md (pre-computed tool results) and
-user/{request_id}/ context files (profile.md, engagement.md, interest_clusters.md).
+Read /tmp/tool_results/{request_id}.md (pre-computed tool results).
 
-## Algorithm: Weighted Rank Fusion with Cluster Awareness
+## Algorithm: Recall-Optimized Weighted Rank Fusion
 
-### Phase 1: Assess Signal Quality
-Read engagement_pattern_analyzer from the tool results:
-- similarity_gap: measures how well user embedding separates positive from negative ads
-- centroid_gap: measures FR centroid signal strength
-- overlap_fraction: >0.5 means embedding is weak
+### Phase 1: Parse ALL Candidates
+Extract EVERY ad ID from ALL "Full result ad_ids" lines across all routes.
+You must parse all 5 route lists completely:
+- forced_retrieval: 150 ads
+- pselect_main_route: 150 ads
+- anti_negative_scorer: 100 ads
+- prod_model_ranker: 100 ads (if available)
+- cluster_explorer: 150 ads
+This gives you ~400-500 unique candidate ads. ALL of them must be scored.
 
-Determine signal regime:
-- STRONG: similarity_gap > 0.05 AND overlap_fraction < 0.3
-- WEAK: similarity_gap < 0.01 OR overlap_fraction > 0.5
-- MODERATE: everything else
+### Phase 2: Read Signal Quality
+From engagement_pattern_analyzer:
+- similarity_gap and overlap_fraction
+- STRONG: gap > 0.05 AND overlap < 0.3
+- WEAK: gap < 0.01 OR overlap > 0.5
+- MODERATE: else
 
-### Phase 2: Score Every Ad
-For each ad that appears in ANY route, compute a combined score using
-WEIGHTED RECIPROCAL RANK FUSION:
+Also read: top_positive_ad_ids (known engaged ads — these MUST be in output).
+Also read: cluster engagement rates — note which clusters have rate > 5%.
 
-  score(ad) = sum over routes of: weight[route] / rank_in_route(ad)
+### Phase 3: Score Every Candidate
+For each of the ~400-500 unique ads, compute:
+
+  score(ad) = sum over routes of: weight[route] / (rank_in_route + 60)
+
+The +60 constant (instead of +1) flattens the rank curve, giving more weight
+to ads that appear in ANY route even at low ranks. This improves recall by
+not over-concentrating on top-ranked ads from each route.
 
 Route weights by signal regime:
 
 | Route              | STRONG | MODERATE | WEAK  |
 |--------------------|--------|----------|-------|
-| prod_model_ranker  | 3.0    | 3.0      | 3.0   |
-| forced_retrieval   | 2.0    | 2.5      | 3.0   |
+| forced_retrieval   | 2.5    | 3.0      | 3.5   |
 | pselect_main_route | 2.5    | 1.5      | 0.5   |
-| anti_negative      | 1.5    | 1.5      | 2.0   |
-| cluster_explorer   | 1.0    | 1.0      | 1.5   |
+| anti_negative      | 2.0    | 2.0      | 2.5   |
+| prod_model_ranker  | 2.0    | 2.0      | 2.0   |
+| cluster_explorer   | 1.5    | 1.5      | 2.0   |
 
-Bonus: if an ad appears in 3+ routes, add +1.0 to its score (consensus bonus).
-Bonus: if an ad is in top_positive_ad_ids from engagement_pattern_analyzer, add +2.0.
+Bonuses (these are critical for recall):
+- Ad in top_positive_ad_ids: +5.0 (MUST be in output — known engaged)
+- Ad appears in 3+ routes: +2.0 (multi-route consensus)
+- Ad appears in 2 routes: +1.0
+- Ad is in a cluster with engagement_rate > 10%: +1.0
+- Ad is in a cluster with engagement_rate > 20%: +2.0 (additional)
 
-### Phase 3: Cluster-Aware Diversity
-Read cluster engagement rates from engagement_pattern_analyzer.
-After scoring, ensure the top-100 covers all high-engagement clusters (rate > 5%):
-- For each high-engagement cluster, at least 10 ads from that cluster
-  should appear in the top 100.
-- If a cluster is under-represented, promote its highest-scoring ads up.
-- Cap any single cluster at 40% of the top-100 to avoid over-concentration.
+### Phase 4: Recall-Maximizing Output
+1. Sort all ~400-500 ads by combined score descending
+2. The top-100 MUST include ALL top_positive_ad_ids that appear in any route
+3. Ensure every cluster with engagement_rate > 5% has at least 15 ads in top 150
+4. Output ALL scored ads (target 300+), not just top 200
 
-### Phase 4: Final Ranking
-1. Sort all ads by combined score (descending)
-2. Apply cluster diversity adjustment from Phase 3
-3. Output the top 200 ads
+The key insight: recall@100 measures how many of the ~97 positive ads appear
+in your top 100. Every positive you miss is a recall loss. Spread your bets
+across routes rather than concentrating on one route's top picks.
 
 ## Output
 Write JSON to outputs/{run_id}/{request_id}.json:
 {
   "request_id": {request_id},
   "ranked_ads": [id1, id2, ...],
-  "strategy": "signal={STRONG|MODERATE|WEAK} gap=X.XX, top_routes=[...], n_consensus=N, cluster_coverage=[...]"
+  "strategy": "signal=X gap=Y.YY n_candidates=N n_consensus=N"
 }
 
-Include exactly 200 ranked ad IDs. This is critical — the more ads you rank,
-the higher the recall. Parse ALL ad IDs from the "Full result ad_ids" lines
-in the tool results, not just the top-10 summaries.
+Output 300+ ranked ad IDs. Parse ALL route ad lists completely.
 ```
 
 **Agent settings:** `mode: "auto"`, `run_in_background: true`

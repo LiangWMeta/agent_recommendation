@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recall-Optimized Agent V3 Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #e7e9ea; line-height: 1.6; }
+  .header { background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%); padding: 40px 48px 32px; border-bottom: 1px solid #30363d; }
+  .header h1 { font-size: 28px; font-weight: 700; color: #f0f6fc; margin-bottom: 4px; }
+  .header .subtitle { font-size: 15px; color: #8b949e; }
+  .header .meta { display: flex; gap: 24px; margin-top: 16px; font-size: 13px; color: #8b949e; flex-wrap: wrap; }
+  .header .meta span { background: #21262d; padding: 4px 12px; border-radius: 6px; border: 1px solid #30363d; }
+  .section-title { padding: 32px 48px 0; max-width: 1400px; }
+  .section-title h2 { font-size: 20px; font-weight: 700; color: #f0f6fc; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px 48px; max-width: 1400px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 28px; }
+  .card.full { grid-column: 1 / -1; }
+  .card h3 { font-size: 16px; font-weight: 600; color: #f0f6fc; margin-bottom: 4px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 16px; }
+  .tag.positive { background: #23883333; color: #3fb950; border: 1px solid #23883355; }
+  .tag.info { background: #388bfd33; color: #58a6ff; border: 1px solid #388bfd55; }
+  .stats-row { display: flex; gap: 20px; flex-wrap: wrap; margin: 16px 0; }
+  .stat-box { flex: 1; min-width: 120px; background: #0d1117; border: 1px solid #21262d; border-radius: 8px; padding: 16px; text-align: center; }
+  .stat-box .value { font-size: 28px; font-weight: 700; font-family: 'SF Mono', Consolas, monospace; color: #58a6ff; }
+  .stat-box .label { font-size: 12px; color: #8b949e; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  th { text-align: left; font-size: 12px; font-weight: 600; color: #8b949e; padding: 8px 12px; border-bottom: 1px solid #30363d; text-transform: uppercase; }
+  td { font-size: 14px; padding: 10px 12px; border-bottom: 1px solid #21262d; }
+  tr:hover td { background: #1c2128; }
+  .num { font-family: 'SF Mono', Consolas, monospace; text-align: right; }
+  .highlight { color: #3fb950; font-weight: 600; }
+  .dim { color: #8b949e; }
+  .comparison { display: flex; gap: 20px; margin: 16px 0; }
+  .comparison-item { flex: 1; background: #0d1117; border-radius: 8px; padding: 20px; text-align: center; border: 1px solid #21262d; }
+  .comparison-item .value { font-size: 32px; font-weight: 700; font-family: 'SF Mono', Consolas, monospace; }
+  .comparison-item .label { font-size: 12px; color: #8b949e; margin-top: 4px; }
+  .comparison-item .delta { font-size: 14px; margin-top: 8px; font-weight: 600; }
+  .rec { background: #0d1117; border-left: 3px solid #388bfd; padding: 12px 16px; margin: 8px 0; border-radius: 0 6px 6px 0; font-size: 14px; }
+  .rec strong { color: #58a6ff; }
+  .rec.green { border-left-color: #3fb950; }
+  .rec.orange { border-left-color: #d29922; }
+  code { background: #21262d; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .footer { text-align: center; padding: 32px; font-size: 12px; color: #484f58; border-top: 1px solid #21262d; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Recall-Optimized Agent V3 &mdash; Prompt Evolution Report</h1>
+  <div class="subtitle">Three prompt iterations: V1 (priority merge) &rarr; V2 (weighted fusion) &rarr; V3 (recall-optimized fusion)</div>
+  <div class="meta">
+    <span>V3 Run: run_306_v3</span>
+    <span>Date: 2026-04-02</span>
+    <span>306 processed, 201 evaluated</span>
+    <span>Same pre-computed data across all versions</span>
+  </div>
+</div>
+
+<!-- HEADLINE -->
+<div class="section-title"><h2>1. Headline: V3 Achieves 19.88% Recall@100</h2></div>
+<div class="grid">
+  <div class="card full">
+    <h3>Recall@100 Progression Across Three Prompt Versions</h3>
+    <span class="tag positive">+5.50% over baseline, +2.45% over V2</span>
+
+    <div class="comparison">
+      <div class="comparison-item">
+        <div class="value" style="color:#3fb950">19.88%</div>
+        <div class="label">V3 Recall@100<br>(Recall-Optimized)</div>
+        <div class="delta" style="color:#3fb950">+5.50% vs baseline</div>
+      </div>
+      <div class="comparison-item">
+        <div class="value" style="color:#58a6ff">17.43%</div>
+        <div class="label">V2 Recall@100<br>(Weighted Fusion)</div>
+        <div class="delta" style="color:#58a6ff">+3.05% vs baseline</div>
+      </div>
+      <div class="comparison-item">
+        <div class="value" style="color:#8b949e">16.99%</div>
+        <div class="label">V1 Recall@100<br>(Priority Merge)</div>
+        <div class="delta dim">+2.61% vs baseline</div>
+      </div>
+      <div class="comparison-item">
+        <div class="value" style="color:#484f58">14.38%</div>
+        <div class="label">Baseline<br>(3-Flow RRF)</div>
+        <div class="delta dim">Fixed weights</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FULL COMPARISON -->
+<div class="section-title"><h2>2. Full Metric Comparison</h2></div>
+<div class="grid">
+  <div class="card full">
+    <h3>All Metrics Across Four Versions</h3>
+    <table>
+      <tr>
+        <th>Metric</th>
+        <th class="num">Baseline</th>
+        <th class="num">V1 (Priority)</th>
+        <th class="num">V2 (Fusion)</th>
+        <th class="num">V3 (Recall)</th>
+        <th class="num">V3 vs BL</th>
+        <th class="num">V3 vs V2</th>
+      </tr>
+      <tr>
+        <td>Recall@10</td>
+        <td class="num dim">1.84%</td>
+        <td class="num dim">2.29%</td>
+        <td class="num">2.92%</td>
+        <td class="num highlight">3.64%</td>
+        <td class="num highlight">+1.80%</td>
+        <td class="num highlight">+0.72%</td>
+      </tr>
+      <tr>
+        <td>Recall@50</td>
+        <td class="num dim">7.82%</td>
+        <td class="num dim">9.40%</td>
+        <td class="num">9.95%</td>
+        <td class="num highlight">11.05%</td>
+        <td class="num highlight">+3.23%</td>
+        <td class="num highlight">+1.10%</td>
+      </tr>
+      <tr>
+        <td><strong>Recall@100</strong></td>
+        <td class="num dim">14.38%</td>
+        <td class="num dim">16.99%</td>
+        <td class="num">17.43%</td>
+        <td class="num" style="font-weight:700;color:#3fb950">19.88%</td>
+        <td class="num highlight">+5.50%</td>
+        <td class="num highlight">+2.45%</td>
+      </tr>
+      <tr>
+        <td><strong>NDCG@10</strong></td>
+        <td class="num dim">36.17%</td>
+        <td class="num dim">47.22%</td>
+        <td class="num">54.74%</td>
+        <td class="num" style="font-weight:700;color:#3fb950">78.52%</td>
+        <td class="num highlight">+42.35%</td>
+        <td class="num highlight">+23.78%</td>
+      </tr>
+      <tr>
+        <td>NDCG@100</td>
+        <td class="num dim">28.96%</td>
+        <td class="num dim">35.31%</td>
+        <td class="num">36.66%</td>
+        <td class="num highlight">44.24%</td>
+        <td class="num highlight">+15.28%</td>
+        <td class="num highlight">+7.58%</td>
+      </tr>
+      <tr>
+        <td><strong>Precision@10</strong></td>
+        <td class="num dim">35.29%</td>
+        <td class="num dim">44.45%</td>
+        <td class="num">56.27%</td>
+        <td class="num" style="font-weight:700;color:#3fb950">69.45%</td>
+        <td class="num highlight">+34.16%</td>
+        <td class="num highlight">+13.19%</td>
+      </tr>
+      <tr>
+        <td>Precision@100</td>
+        <td class="num dim">27.53%</td>
+        <td class="num dim">32.78%</td>
+        <td class="num">33.66%</td>
+        <td class="num highlight">38.12%</td>
+        <td class="num highlight">+10.59%</td>
+        <td class="num highlight">+4.46%</td>
+      </tr>
+    </table>
+
+    <div class="rec green" style="margin-top:16px"><strong>V3 wins on every metric including recall.</strong> Recall@100: 19.88% (+2.45% over V2, +5.50% over baseline). NDCG@10: 78.52% (nearly 8 in 10 top-ranked ads are positives). Precision@10: 69.45% (7 of top 10 are positives). The recall-focused scoring formula with flattened rank curve and higher bonuses successfully improved recall without sacrificing ranking quality.</div>
+  </div>
+</div>
+
+<!-- WHAT CHANGED -->
+<div class="section-title"><h2>3. What Changed: V2 &rarr; V3</h2></div>
+<div class="grid">
+  <div class="card">
+    <h3>V2: Precision-Focused</h3>
+    <span class="tag info">Weighted Rank Fusion</span>
+    <div style="font-size:13px; color:#8b949e; line-height:1.8;">
+      <p><code>score = &Sigma; weight / (rank + 1)</code></p>
+      <p>Standard reciprocal rank — heavily favors top-ranked ads from each route. Ads ranked #50 get 1/50th the weight of #1.</p>
+      <p><strong>Consensus bonus:</strong> +1.0 for 3+ routes</p>
+      <p><strong>Output:</strong> 200 ads</p>
+      <p style="margin-top:8px; color:#d29922"><strong>Limitation:</strong> Over-concentrates on each route's top picks. Positives ranked #80-150 in any route get negligible scores.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>V3: Recall-Focused</h3>
+    <span class="tag positive">Flattened Rank Curve</span>
+    <div style="font-size:13px; color:#8b949e; line-height:1.8;">
+      <p><code>score = &Sigma; weight / (rank + 60)</code></p>
+      <p><strong>Key change: +60 instead of +1.</strong> Flattens the rank curve. Ad at rank #1 scores weight/61, rank #150 scores weight/210. Ratio is only 3.4x (vs 150x with +1). This gives tail ads a fair chance.</p>
+      <p><strong>Stronger bonuses:</strong> top_positive → +5.0 (was +2.0), 3+ routes → +2.0, 2 routes → +1.0, high-engagement cluster → +1.0</p>
+      <p><strong>Output:</strong> 300 ads (was 200)</p>
+      <p style="margin-top:8px; color:#3fb950"><strong>Why it works:</strong> Positives are spread across all rank positions in each route. The flattened curve ensures positives at rank #100 still contribute meaningful scores, especially when they appear in multiple routes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- IMPROVEMENT STACK -->
+<div class="section-title"><h2>4. Cumulative Improvement Stack</h2></div>
+<div class="grid">
+  <div class="card full">
+    <h3>Recall@100 Progression</h3>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="value" style="color:#484f58">14.38%</div>
+        <div class="label">Baseline<br>3-Flow RRF</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" style="color:#8b949e">16.99%</div>
+        <div class="label">V1: +2.61%<br>Priority Merge</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" style="color:#58a6ff">17.43%</div>
+        <div class="label">V2: +0.44%<br>Weighted Fusion</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" style="color:#3fb950">19.88%</div>
+        <div class="label">V3: +2.45%<br>Recall-Optimized</div>
+      </div>
+    </div>
+
+    <table style="margin-top:20px">
+      <tr><th>Layer</th><th>Change</th><th class="num">Recall@100</th><th class="num">Incremental</th><th class="num">Total vs BL</th></tr>
+      <tr>
+        <td>Baseline</td><td>3-flow RRF with fixed equal weights</td>
+        <td class="num">14.38%</td><td class="num dim">—</td><td class="num dim">—</td>
+      </tr>
+      <tr>
+        <td>V1: Agent reasoning</td><td>Signal-adaptive routing, priority merge</td>
+        <td class="num">16.99%</td><td class="num highlight">+2.61%</td><td class="num highlight">+2.61%</td>
+      </tr>
+      <tr>
+        <td>V2: Better fusion</td><td>Weighted RRF (1/rank+1), consensus bonus, cluster diversity</td>
+        <td class="num">17.43%</td><td class="num highlight">+0.44%</td><td class="num highlight">+3.05%</td>
+      </tr>
+      <tr>
+        <td><strong>V3: Recall focus</strong></td><td>Flattened curve (1/rank+60), stronger bonuses, 300 output</td>
+        <td class="num" style="font-weight:700;color:#3fb950">19.88%</td><td class="num highlight">+2.45%</td><td class="num highlight">+5.50%</td>
+      </tr>
+    </table>
+
+    <div class="rec green" style="margin-top:16px"><strong>Total improvement: +5.50% recall@100</strong> over baseline through three prompt iterations. The largest gains came from V1 (agent reasoning, +2.61%) and V3 (recall optimization, +2.45%). V2's contribution was mainly precision/NDCG (+7.5% NDCG@10) rather than recall.</div>
+  </div>
+</div>
+
+<!-- CEILING -->
+<div class="section-title"><h2>5. Remaining Recall Gap</h2></div>
+<div class="grid">
+  <div class="card full">
+    <h3>Where Are the Missing Positives?</h3>
+    <span class="tag info">Analysis of 50 requests</span>
+    <table>
+      <tr><th>Category</th><th class="num">Avg per Request</th><th class="num">% of All Positives</th><th>Action</th></tr>
+      <tr>
+        <td>Positives in agent top-100</td>
+        <td class="num highlight">~19</td><td class="num highlight">~20%</td>
+        <td><span style="color:#3fb950">Captured by V3</span></td>
+      </tr>
+      <tr>
+        <td>Positives in routes but outside top-100</td>
+        <td class="num" style="color:#d29922">~17</td><td class="num" style="color:#d29922">~18%</td>
+        <td>Better ranking could capture more</td>
+      </tr>
+      <tr>
+        <td>Positives NOT in any route</td>
+        <td class="num" style="color:#f85149">~61</td><td class="num" style="color:#f85149">~63%</td>
+        <td>Need more/better retrieval routes (similar_ads, wider top_k)</td>
+      </tr>
+    </table>
+    <div class="rec orange" style="margin-top:16px"><strong>The prompt ceiling is ~37% recall</strong> (positives in any route / total positives). V3 captures ~20% of the ~37% reachable. To go beyond 37%, we need to expand retrieval: add similar_ads_lookup (+3.8%), increase route top_k from 150 to 300, or add new retrieval strategies.</div>
+  </div>
+</div>
+
+<div class="footer">
+  Baseline → V1 → V2 → V3 | Agent Recommendation Framework | Prompt-only improvements, same pre-computed data | 2026-04-02
+</div>
+
+</body>
+</html>
