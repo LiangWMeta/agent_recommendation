@@ -125,7 +125,12 @@ def main():
 
         data = np.load(gt_index[request_id])
         ad_ids = data["ad_ids"]
-        labels = data["labels"]
+        # Use test_labels (unseen by agent) to avoid leakage.
+        # history_labels are used by tools; evaluating on them inflates metrics.
+        if "test_labels" in data:
+            labels = data["test_labels"]
+        else:
+            labels = data["labels"]
 
         result = evaluate_request(ranked_ads, ad_ids, labels)
         result["request_id"] = request_id
