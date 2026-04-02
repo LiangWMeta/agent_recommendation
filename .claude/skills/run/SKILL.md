@@ -68,76 +68,62 @@ Process requests in waves of `wave_size` (default 5). For each wave, spawn agent
 **Agent prompt for each request:**
 
 ```
-You are an ads recommendation agent. Your goal is to find NEW ads the user
-will engage with — not just re-rank known history. Maximize recall on UNSEEN
-positive ads in your top-100.
+You are an ads recommendation agent. Find NEW ads the user will engage with.
 
 ## Input
 Read /tmp/tool_results/{request_id}.md (pre-computed tool results).
 
-## Algorithm: Weighted Rank Fusion (Recall + Ranking)
+## Algorithm: Route-Balanced Weighted Rank Fusion
 
 ### Phase 1: Parse ALL Candidates
 Extract EVERY ad ID from ALL "Full result ad_ids" lines across all routes.
-Parse all 5 route lists completely:
-- forced_retrieval: 150 ads
-- pselect_main_route: 150 ads
-- anti_negative_scorer: 100 ads
-- prod_model_ranker: 100 ads (if available)
-- cluster_explorer: 150 ads
-This gives ~400-500 unique candidate ads. ALL must be scored.
+Parse all 5 route lists completely. This gives ~400-500 unique ads.
 
 ### Phase 2: Read Signal Quality
-From engagement_pattern_analyzer:
-- similarity_gap and overlap_fraction
+From engagement_pattern_analyzer: similarity_gap, overlap_fraction.
 - STRONG: gap > 0.05 AND overlap < 0.3
 - WEAK: gap < 0.01 OR overlap > 0.5
 - MODERATE: else
 
-Also read: cluster engagement rates — note clusters with rate > 5%.
-
-NOTE: top_positive_ad_ids are PAST engagements (history). Do NOT boost them.
-Focus on finding NEW ads the user hasn't engaged with yet.
+NOTE: top_positive_ad_ids are PAST history. Do NOT boost them.
 
 ### Phase 3: Score Every Candidate
 For each unique ad, compute:
 
   score(ad) = sum over routes of: weight[route] / (rank_in_route + 30)
 
-The +30 constant flattens the rank curve moderately — ads at rank #1 get
-weight/31, rank #150 gets weight/180 (ratio ~6x). This balances between
-top-ranking quality and recall breadth.
-
-Route weights by signal regime:
+Route weights (EQUAL emphasis to maximize recall from all routes):
 
 | Route              | STRONG | MODERATE | WEAK  |
 |--------------------|--------|----------|-------|
-| forced_retrieval   | 2.5    | 3.0      | 3.5   |
-| pselect_main_route | 2.5    | 1.5      | 0.5   |
-| anti_negative      | 2.0    | 2.0      | 2.5   |
+| forced_retrieval   | 2.5    | 2.5      | 3.0   |
+| pselect_main_route | 2.5    | 2.0      | 1.0   |
+| anti_negative      | 2.5    | 2.5      | 2.5   |
 | prod_model_ranker  | 3.0    | 3.0      | 3.0   |
-| cluster_explorer   | 1.5    | 1.5      | 2.0   |
+| cluster_explorer   | 2.0    | 2.0      | 2.5   |
 
 Bonuses:
-- Ad appears in 3+ routes: +2.0 (multi-route consensus — strongest signal)
+- Ad appears in 3+ routes: +1.5
 - Ad appears in 2 routes: +0.5
-- Ad is in a cluster with engagement_rate > 10%: +0.5
-- Ad is in a cluster with engagement_rate > 20%: +1.0 (additional)
+- Ad in cluster with engagement_rate > 10%: +0.5
 
-DO NOT give bonus to top_positive_ad_ids — those are history, not prediction.
+DO NOT boost top_positive_ad_ids.
 
-### Phase 4: Output
-1. Sort all ~400-500 ads by combined score descending
-2. Ensure every cluster with engagement_rate > 5% has at least 10 ads in top 100
-3. Cap any single cluster at 35 ads in top 100 to ensure diversity
-4. Output top 300 ads
+### Phase 4: Route-Diversity Guarantee
+After scoring, ensure the top-100 includes contributions from ALL routes:
+- At least 15 ads from each route's top-50 must appear in the final top-100.
+  If a route is under-represented, promote its highest-scoring unique ads.
+  This prevents any single route from dominating and missing unique positives.
+- Cap any single route at 40 ads in top-100.
 
-## Output
+### Phase 5: Output
+Sort by score, apply route-diversity, output top 300 ads.
+
 Write JSON to outputs/{run_id}/{request_id}.json:
 {
   "request_id": {request_id},
   "ranked_ads": [id1, id2, ...],
-  "strategy": "signal=X gap=Y.YY n_candidates=N n_consensus=N"
+  "strategy": "signal=X gap=Y.YY n_candidates=N"
 }
 
 Output 300 ranked ad IDs. Parse ALL route ad lists completely.

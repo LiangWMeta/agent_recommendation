@@ -1,0 +1,74 @@
+RUN 306 v5 COMPLETION SUMMARY
+==============================
+
+Processing Date: 2026-04-01
+Status: COMPLETE
+
+RESULTS GENERATED
+================
+
+Total Requests Processed: 35/35
+Output Format: JSON files
+Location: /home/liangwang/semantic_delivery/agent_recommendation/outputs/run_306_v5/
+
+SCORING METHODOLOGY
+===================
+
+Route Weights (based on similarity_gap):
+- Forced Retrieval: 2.75 (strong signal) or 2.5 (weak signal)
+- Pselect Main Route: 1.75 (strong signal) or 1.0 (weak signal)
+- Anti-Negative Scorer: 2.5
+- Production Model Ranker: 3.0
+- Cluster Explorer: 2.25
+
+Scoring Formula:
+  score = sum(weight / (rank + 30)) for each ad across all routes
+
+Multi-Route Bonuses:
+- 3+ routes: +1.5 per additional route
+- 2 routes: +0.5 per additional route
+- Applied to ads appearing in multiple routes
+
+OUTPUT STATISTICS
+================
+
+Request IDs: 2075458151, 2076177514, 2077442815, 2081457737, 2084754187, 2097331064, 
+2115207743, 2119461446, 2122557793, 2134682160, 2138783602, 2144335146, 221186113, 
+222429239, 223891504, 231886185, 237153658, 250631623, 256888562, 271304705, 286402932, 
+293436320, 305215587, 3077886, 313273115, 315042827, 315421845, 318704203, 32062248, 
+322157606, 325704017, 329789831, 335219716, 336115518, 365456026
+
+Ad Count Distribution:
+- Files with 300 ads: 25
+- Files with <300 ads: 10
+  - Request 293436320: 269 ads
+  - Request 2115207743: 271 ads
+  - Request 365456026: 274 ads
+  - Request 322157606: 276 ads
+  - Request 2077442815: 284 ads
+  - Request 2097331064: 290 ads
+  - Request 32062248: 294 ads
+  - Request 2134682160: 297 ads
+  - Request 315042827: 297 ads
+  - Request 336115518: 297 ads
+
+Similarity Gap Distribution:
+- Range: 0.00 to 0.13
+- Mean: ~0.065
+- Indicates reasonable signal quality across most requests
+
+NOTES
+=====
+
+Requests with <300 ads had fewer than 300 unique ads available when combining results 
+across all retrieval routes (Forced Retrieval, Pselect Main, Anti-Negative, Prod Model, 
+Cluster Explorer). This is expected and correct behavior.
+
+All output JSON files follow this structure:
+{
+  "request_id": <integer>,
+  "ranked_ads": [<ad_id_1>, <ad_id_2>, ..., <ad_id_N>],
+  "strategy": "v5 gap=<similarity_gap>"
+}
+
+Files are ready in: /home/liangwang/semantic_delivery/agent_recommendation/outputs/run_306_v5/
