@@ -5,80 +5,41 @@ description: Pull and prepare all data needed to run the agent recommendation sy
 
 # Data Setup
 
-Prepare all data needed to run the agent. Follows the quickstart chain from `data/datasets.md`: extract source data → create train/test split → extract prod predictions → generate user context → generate ads pool understanding.
+Prepare all data needed to run the agent. Uses `scripts/setup_data.py` which orchestrates the full pipeline: check existing data, build missing stages, report readiness.
 
-## Arguments
+## Usage
 
-- `--max-requests N`: Maximum requests to process (default: 100)
-- `--skip-existing`: Skip steps where data already exists
-
-## Workflow
-
-### 1. Check existing data
+### Check status only (no changes)
 
 ```bash
-echo "=== Checking data ==="
-echo "raw:       $(ls data/local/model/raw/*.npz 2>/dev/null | wc -l) files"
-echo "split:     $(ls data/local/model/split/*.npz 2>/dev/null | wc -l) files"
-echo "enriched:  $(ls data/local/model/enriched/*.json 2>/dev/null | wc -l) files"
-echo "full_pool: $(ls data/local/model/full_pool/*.npz 2>/dev/null | wc -l) files"
-echo "bulk_eval: $(ls data/local/eval/bulk_eval/*.npz 2>/dev/null | wc -l) files"
-echo "user ctx:  $(ls -d user/*/ 2>/dev/null | wc -l) folders"
+python3 scripts/setup_data.py --check-only
 ```
 
-### 2. Extract RAA source data (if raw/ is empty)
+### Build missing data (default)
 
 ```bash
-python3 scripts/extract_raa.py \
-  --output-dir data/local/model/raw \
-  --max-requests {max_requests}
+python3 scripts/setup_data.py --max-requests 100
 ```
 
-If `extract_raa.py` doesn't exist or raw/ already has data, skip this step and note it.
-
-### 3. Create train/test split
+### Force rebuild everything
 
 ```bash
-python3 scripts/create_split_data.py \
-  --data-dir data/local/model/raw \
-  --output-dir data/local/model/split \
-  --max-requests {max_requests}
+python3 scripts/setup_data.py --force --max-requests 100
 ```
 
-### 4. Extract production predictions (optional but recommended)
+## What it does
 
-```bash
-python3 scripts/extract_prod_predictions.py \
-  --data-dir data/local/model/raw \
-  --output-dir data/local/model/enriched
-```
+The setup script checks each stage and only builds what's missing or stale:
 
-Note: This requires Hive/Presto access. If it fails, proceed without — tools will use cosine fallback.
+1. **Raw data** (`data/local/model/raw/`) — extracted from Hive via `extract_raa.py`
+2. **Train/test split** (`data/local/model/split/`) — 50/50 label split for leakage prevention
+3. **Prod predictions** (`data/local/model/enriched/`) — optional, SlimDSNN calibrated CTR
+4. **User contexts** (`user/`) — per-request profile, engagement, interests, context
+5. **Ads pool understanding** (`ads_pool/`) — pool overview, catalog, semantic clusters
 
-### 5. Generate user context folders
+Staleness detection: if source data is newer than derived data, the stage is rebuilt.
 
-```bash
-python3 scripts/prepare_contexts.py \
-  --data-dir data/local/model/split \
-  --output-dir user/
-```
+## After setup
 
-### 6. Generate ads pool understanding
-
-If `ads_pool/refresh.py` exists:
-```bash
-python3 ads_pool/refresh.py --data-dir data/local/model/split
-```
-
-Otherwise, note that ads_pool context files need to be created manually or the refresh script needs to be built.
-
-### 7. Report
-
-Print summary of what was created:
-- Raw data: N requests
-- Split data: N requests (with history/test labels)
-- Enriched: N requests with prod predictions
-- User contexts: N folders
-- Ads pool: status
-
-Suggest: "Data is ready. Run `/recommend` to start recommending, or `/analyze` to analyze system behavior."
+Report readiness and suggest next steps:
+- "Data is ready. Run `/recommend` to start recommending, or `/analyze` to analyze system behavior."

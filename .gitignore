@@ -2,7 +2,16 @@
 data/local/
 !data/datasets.md
 
-# Generated contexts
+# Generated user contexts (keep README, ignore per-request folders)
+user/*/
+!user/README.md
+
+# Generated ads pool context (keep README + refresh script, ignore generated md)
+ads_pool/pool_overview.md
+ads_pool/catalog.md
+ads_pool/semantic_clusters.md
+
+# Generated request contexts
 requests/
 requests_split/
 requests_bulk_eval/

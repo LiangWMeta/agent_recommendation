@@ -4,7 +4,15 @@ Single source of truth for all datasets used by the agent recommendation framewo
 
 ## Quickstart: Pull Data to Run the Agent
 
-From zero to a working agent in 6 steps:
+The fastest way — `setup_data.py` checks what exists, builds what's missing:
+
+```bash
+python3 scripts/setup_data.py              # check + build all missing stages
+python3 scripts/setup_data.py --check-only  # just report status
+python3 scripts/setup_data.py --force       # rebuild everything
+```
+
+Or run individual steps manually:
 
 ```bash
 # Step 1: Pull RAA source data (embeddings + labels from Hive)
@@ -30,12 +38,7 @@ python3 scripts/prepare_contexts.py \
 python3 ads_pool/refresh.py --data-dir data/local/model/split
 
 # Step 6: Run the agent
-# Quick pilot diagnosis (no LLM, ~10s)
 python3 scripts/run_pilot_diagnosis.py --data-dir data/local/model/split
-
-# Or full agent benchmark with Claude
-python3 scripts/run_benchmark_batch.py \
-  --data-dir data/local/model/split --run-id my_run --max-requests 20
 ```
 
 **Dependency chain**: Step 1 → Step 2 → Steps 3,4,5 (parallel) → Step 6
